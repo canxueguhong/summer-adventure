@@ -14,7 +14,7 @@
     var CHILD_NAME = '王孟原';
     var SUBJECTS = ['pinyin', 'math', 'english', 'piano', 'chess', 'reading'];
     var QUESTIONS_PER_QUIZ = 10;
-    var DATA_VERSION = 'v2_farm';
+    var DATA_VERSION = 'v3_daily';
 
     // ===== Farm Data Definitions =====
     var FARM_ANIMALS = [
@@ -214,7 +214,18 @@
         return '<svg viewBox="0 0 500 140" fill="none" xmlns="http://www.w3.org/2000/svg">' + parts + '</svg>';
     }
 
-    // ===== Question Banks (expanded: 15 per subject = 90 total) =====
+    // ===== Seeded Random (daily rotation) =====
+    function seededRand(seed) { var x = Math.sin(seed) * 10000; return x - Math.floor(x); }
+    function seededShuffle(arr, seed) {
+        var r = arr.slice();
+        for (var i = r.length - 1; i > 0; i--) {
+            var j = Math.floor(seededRand(seed + i * 7) * (i + 1));
+            var t = r[i]; r[i] = r[j]; r[j] = t;
+        }
+        return r;
+    }
+
+    // ===== Question Banks (30 per subject, daily rotation) =====
     var questionBanks = {
         pinyin: {
             title: '拼音城堡 · 每日练习', color: '#FF8C7A', bg: '#FFF0EE', lang: 'zh-CN', hasAudio: true,
@@ -223,97 +234,102 @@
                 { difficulty: 1, prompt: '选出正确的韵母', display: 'o', speakText: '哦', options: [{text:'a',speak:'啊'},{text:'o',speak:'哦'},{text:'e',speak:'鹅'},{text:'i',speak:'衣'}], correct: 1, hint: 'o是圆唇音，嘴巴圆圆的' },
                 { difficulty: 2, prompt: '"mā" 读哪个字？', display: 'mā', speakText: '妈', options: [{text:'妈',speak:'妈'},{text:'马',speak:'马'},{text:'麻',speak:'麻'},{text:'骂',speak:'骂'}], correct: 0, hint: '一声平，mā是第一声' },
                 { difficulty: 2, prompt: '"mǎ" 是第几声？', display: 'mǎ', speakText: '马', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 2, hint: '三声拐弯，先降后升' },
-                { difficulty: 2, prompt: '"huā" 是什么？', display: 'huā', speakText: '花', options: [{text:'花',speak:'花'},{text:'火',speak:'火'},{text:'画',speak:'画'},{text:'红',speak:'红'}], correct: 0, hint: 'h-u-ā，花朵的花' },
-                { difficulty: 3, prompt: '哪个含有"ang"？', display: 'ang', speakText: '昂', options: [{text:'羊(yáng)',speak:'羊'},{text:'鱼(yú)',speak:'鱼'},{text:'月(yuè)',speak:'月'},{text:'雨(yǔ)',speak:'雨'}], correct: 0, hint: 'ang是后鼻韵母，羊的韵母就是ang' },
+                { difficulty: 2, prompt: '"huā" 是什么？', display: 'huā', speakText: '花', options: [{text:'花',speak:'花'},{text:'火',speak:'火'},{text:'画',speak:'画'},{text:'红',speak:'红'}], correct: 0, hint: 'h-u-a，花朵的花' },
+                { difficulty: 3, prompt: '哪个含有"ang"？', display: 'ang', speakText: '昂', options: [{text:'羊',speak:'羊'},{text:'鱼',speak:'鱼'},{text:'月',speak:'月'},{text:'雨',speak:'雨'}], correct: 0, hint: 'ang是后鼻韵母，羊的韵母就是ang' },
                 { difficulty: 2, prompt: '"shū" 是哪个字？', display: 'shū', speakText: '书', options: [{text:'书',speak:'书'},{text:'树',speak:'树'},{text:'鼠',speak:'鼠'},{text:'蔬',speak:'蔬'}], correct: 0, hint: 'sh-ū，一声，书本的书' },
                 { difficulty: 2, prompt: '"nǐ" 是哪个字？', display: 'nǐ', speakText: '你', options: [{text:'你',speak:'你'},{text:'尼',speak:'尼'},{text:'泥',speak:'泥'},{text:'逆',speak:'逆'}], correct: 0, hint: 'n-ǐ，三声，你的你' },
-                { difficulty: 2, prompt: '"dà" 是第几声？', display: 'dà', speakText: '大', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 3, hint: '四声降，dà是第四声' },
-                { difficulty: 3, prompt: '"péng yǒu" 是什么？', display: 'péng yǒu', speakText: '朋友', options: [{text:'朋友',speak:'朋友'},{text:'葡萄',speak:'葡萄'},{text:'苹果',speak:'苹果'},{text:'皮带',speak:'皮带'}], correct: 0, hint: 'p-éng y-ǒu，好朋友的朋友' },
+                { difficulty: 2, prompt: '"dà" 是第几声？', display: 'dà', speakText: '大', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 3, hint: '四声降，da是第四声' },
+                { difficulty: 3, prompt: '"peng you" 是什么？', display: 'peng you', speakText: '朋友', options: [{text:'朋友',speak:'朋友'},{text:'葡萄',speak:'葡萄'},{text:'苹果',speak:'苹果'},{text:'皮带',speak:'皮带'}], correct: 0, hint: 'p-eng y-ou，好朋友' },
                 { difficulty: 1, prompt: '选出声母"f"', display: 'f', speakText: '佛', options: [{text:'f',speak:'佛'},{text:'t',speak:'特'},{text:'h',speak:'喝'},{text:'g',speak:'哥'}], correct: 0, hint: 'f是上齿咬下唇' },
-                { difficulty: 2, prompt: '"guó" 是哪个字？', display: 'guó', speakText: '国', options: [{text:'国',speak:'国'},{text:'果',speak:'果'},{text:'过',speak:'过'},{text:'锅',speak:'锅'}], correct: 0, hint: 'g-u-ó，二声，国家的国' },
-                { difficulty: 2, prompt: '"en" 是什么韵母？', display: 'en', speakText: '恩', options: [{text:'前鼻韵母',speak:'前鼻韵母'},{text:'后鼻韵母',speak:'后鼻韵母'},{text:'单韵母',speak:'单韵母'},{text:'复韵母',speak:'复韵母'}], correct: 0, hint: 'en是前鼻韵母，舌尖抵上齿龈' },
-                { difficulty: 3, prompt: '"zhī" 是什么？', display: 'zhī', speakText: '知', options: [{text:'整体认读音节',speak:'整体认读音节'},{text:'三拼音节',speak:'三拼音节'},{text:'两拼音节',speak:'两拼音节'},{text:'零声母',speak:'零声母'}], correct: 0, hint: 'zhi是整体认读音节，不需要拼' },
-                { difficulty: 2, prompt: '"xiǎo" 是第几声？', display: 'xiǎo', speakText: '小', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 2, hint: '三声拐弯，大小的"小"' }
+                { difficulty: 2, prompt: '"guo" 是哪个字？', display: 'guo', speakText: '国', options: [{text:'国',speak:'国'},{text:'果',speak:'果'},{text:'过',speak:'过'},{text:'锅',speak:'锅'}], correct: 0, hint: 'g-u-o，国家的国' },
+                { difficulty: 2, prompt: '"en" 是什么韵母？', display: 'en', speakText: '恩', options: [{text:'前鼻韵母',speak:'前鼻韵母'},{text:'后鼻韵母',speak:'后鼻韵母'},{text:'单韵母',speak:'单韵母'},{text:'复韵母',speak:'复韵母'}], correct: 0, hint: 'en是前鼻韵母' },
+                { difficulty: 3, prompt: '"zhi" 是什么？', display: 'zhi', speakText: '知', options: [{text:'整体认读音节',speak:'整体认读音节'},{text:'三拼音节',speak:'三拼音节'},{text:'两拼音节',speak:'两拼音节'},{text:'零声母',speak:'零声母'}], correct: 0, hint: 'zhi是整体认读音节' },
+                { difficulty: 2, prompt: '"xiao" 是第几声？', display: 'xiao', speakText: '小', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 2, hint: '三声拐弯' },
+                { difficulty: 1, prompt: '选出声母"m"', display: 'm', speakText: '摸', options: [{text:'n',speak:'讷'},{text:'m',speak:'摸'},{text:'l',speak:'勒'},{text:'r',speak:'日'}], correct: 1, hint: 'm是双唇鼻音' },
+                { difficulty: 2, prompt: '"hao" 是哪个字？', display: 'hao', speakText: '好', options: [{text:'好',speak:'好'},{text:'号',speak:'号'},{text:'豪',speak:'豪'},{text:'浩',speak:'浩'}], correct: 0, hint: 'h-ao，三声，好坏的好' },
+                { difficulty: 2, prompt: '"tian" 是哪个字？', display: 'tian', speakText: '天', options: [{text:'天',speak:'天'},{text:'田',speak:'田'},{text:'甜',speak:'甜'},{text:'添',speak:'添'}], correct: 0, hint: 't-i-an，天空的天' },
+                { difficulty: 3, prompt: '"ying" 是什么？', display: 'ying', speakText: '鹰', options: [{text:'整体认读音节',speak:'整体认读音节'},{text:'三拼音节',speak:'三拼音节'},{text:'两拼音节',speak:'两拼音节'},{text:'零声母',speak:'零声母'}], correct: 0, hint: 'ying是整体认读音节' },
+                { difficulty: 1, prompt: '选出韵母"u"', display: 'u', speakText: '乌', options: [{text:'u',speak:'乌'},{text:'v',speak:'迂'},{text:'i',speak:'衣'},{text:'a',speak:'啊'}], correct: 0, hint: 'u嘴巴突出，圆圆的' },
+                { difficulty: 2, prompt: '"ke" 是哪个字？', display: 'ke', speakText: '课', options: [{text:'课',speak:'课'},{text:'可',speak:'可'},{text:'客',speak:'客'},{text:'克',speak:'克'}], correct: 0, hint: 'k-e，四声，上课的课' },
+                { difficulty: 2, prompt: '"shui" 是哪个字？', display: 'shui', speakText: '水', options: [{text:'水',speak:'水'},{text:'谁',speak:'谁'},{text:'税',speak:'税'},{text:'睡',speak:'睡'}], correct: 0, hint: 'sh-u-i，三声，喝水的水' },
+                { difficulty: 3, prompt: '"yuan" 是什么？', display: 'yuan', speakText: '园', options: [{text:'整体认读音节',speak:'整体认读音节'},{text:'三拼音节',speak:'三拼音节'},{text:'两拼音节',speak:'两拼音节'},{text:'零声母',speak:'零声母'}], correct: 0, hint: 'yuan是整体认读音节' },
+                { difficulty: 1, prompt: '选出声母"g"', display: 'g', speakText: '哥', options: [{text:'k',speak:'科'},{text:'g',speak:'哥'},{text:'h',speak:'喝'},{text:'j',speak:'鸡'}], correct: 1, hint: 'g是舌根音' },
+                { difficulty: 2, prompt: '"bai" 是哪个字？', display: 'bai', speakText: '白', options: [{text:'白',speak:'白'},{text:'百',speak:'百'},{text:'拜',speak:'拜'},{text:'败',speak:'败'}], correct: 0, hint: 'b-ai，二声，白色的白' },
+                { difficulty: 2, prompt: '"hou" 是第几声？', display: 'hou', speakText: '猴', options: [{text:'一声',speak:'第一声'},{text:'二声',speak:'第二声'},{text:'三声',speak:'第三声'},{text:'四声',speak:'第四声'}], correct: 1, hint: '二声扬，hou猴是第二声' },
+                { difficulty: 3, prompt: '"chun" 含有什么韵母？', display: 'chun', speakText: '春', options: [{text:'un',speak:'un'},{text:'en',speak:'en'},{text:'in',speak:'in'},{text:'an',speak:'an'}], correct: 0, hint: 'ch-un，un是前鼻韵母' },
+                { difficulty: 1, prompt: '选出韵母"e"', display: 'e', speakText: '鹅', options: [{text:'a',speak:'啊'},{text:'o',speak:'哦'},{text:'e',speak:'鹅'},{text:'i',speak:'衣'}], correct: 2, hint: 'e嘴巴扁扁的，像鹅的叫声' },
+                { difficulty: 2, prompt: '"zuo" 是哪个字？', display: 'zuo', speakText: '做', options: [{text:'做',speak:'做'},{text:'坐',speak:'坐'},{text:'左',speak:'左'},{text:'走',speak:'走'}], correct: 0, hint: 'z-u-o，四声，做事的做' },
+                { difficulty: 3, prompt: '"qiu" 的韵母是？', display: 'qiu', speakText: '球', options: [{text:'iu',speak:'iu'},{text:'ou',speak:'ou'},{text:'ao',speak:'ao'},{text:'ie',speak:'ie'}], correct: 0, hint: 'q-iu，iu是复韵母' }
             ]
         },
         math: {
             title: '数学森林 · 每日练习', color: '#6BB6E0', bg: '#E8F4FB', lang: null, hasAudio: false,
             questions: [
-                { difficulty: 1, prompt: '3 + 4 = ?', equation: '3 + 4 = ?', tfA: 7, options: [{text:'6'},{text:'7'},{text:'8'},{text:'5'}], correct: 1, hint: '3个苹果加4个苹果，数一数' },
-                { difficulty: 1, prompt: '9 - 5 = ?', equation: '9 - 5 = ?', tfA: 9, tfB: 5, options: [{text:'3'},{text:'5'},{text:'4'},{text:'6'}], correct: 2, hint: '9个拿走5个，还剩几个？' },
+                { difficulty: 1, prompt: '3 + 4 = ?', equation: '3 + 4 = ?', tfA: 7, options: [{text:'6'},{text:'7'},{text:'8'},{text:'5'}], correct: 1, hint: '3个苹果加4个苹果' },
+                { difficulty: 1, prompt: '9 - 5 = ?', equation: '9 - 5 = ?', tfA: 9, tfB: 5, options: [{text:'3'},{text:'5'},{text:'4'},{text:'6'}], correct: 2, hint: '9个拿走5个' },
                 { difficulty: 2, prompt: '8 + 7 = ?', equation: '8 + 7 = ?', tfA: 8, tfB: 7, options: [{text:'14'},{text:'15'},{text:'16'},{text:'13'}], correct: 1, hint: '8和2凑成10，7分成2和5，10+5=15' },
                 { difficulty: 2, prompt: '15 - 8 = ?', equation: '15 - 8 = ?', tfA: 15, tfB: 8, options: [{text:'6'},{text:'8'},{text:'7'},{text:'9'}], correct: 2, hint: '15分成10和5，10-8=2，2+5=7' },
-                { difficulty: 3, prompt: '25 - 17 = ?', equation: '25 - 17 = ?', tfA: 25, tfB: 17, options: [{text:'8'},{text:'12'},{text:'7'},{text:'42'}], correct: 0, hint: '个位5-7不够减，从十位借1，15-7=8，1-1=0' },
-                { difficulty: 3, prompt: '36 + 28 = ?', equation: '36 + 28 = ?', options: [{text:'54'},{text:'64'},{text:'74'},{text:'68'}], correct: 1, hint: '6+8=14进1，3+2+1=6，结果是64' },
-                { difficulty: 2, prompt: '45 + 23 = ?', equation: '45 + 23 = ?', options: [{text:'68'},{text:'78'},{text:'58'},{text:'65'}], correct: 0, hint: '5+3=8，4+2=6，结果是68' },
-                { difficulty: 3, prompt: '50 - 26 = ?', equation: '50 - 26 = ?', options: [{text:'34'},{text:'24'},{text:'14'},{text:'26'}], correct: 1, hint: '0-6不够减，借1变10，10-6=4，4-2=2' },
-                { difficulty: 3, prompt: '73 + 19 = ?', equation: '73 + 19 = ?', options: [{text:'82'},{text:'92'},{text:'86'},{text:'88'}], correct: 1, hint: '3+9=12进1，7+1+1=9，结果是92' },
-                { difficulty: 3, prompt: '82 - 37 = ?', equation: '82 - 37 = ?', options: [{text:'45'},{text:'55'},{text:'35'},{text:'48'}], correct: 0, hint: '2-7不够减，借1变12，12-7=5，7-3=4' },
-                { difficulty: 1, prompt: '6 + 3 = ?', equation: '6 + 3 = ?', tfA: 6, options: [{text:'8'},{text:'9'},{text:'7'},{text:'10'}], correct: 1, hint: '6个加3个，数一数' },
+                { difficulty: 3, prompt: '25 - 17 = ?', equation: '25 - 17 = ?', tfA: 25, tfB: 17, options: [{text:'8'},{text:'12'},{text:'7'},{text:'42'}], correct: 0, hint: '个位5-7不够减，借1，15-7=8' },
+                { difficulty: 3, prompt: '36 + 28 = ?', equation: '36 + 28 = ?', options: [{text:'54'},{text:'64'},{text:'74'},{text:'68'}], correct: 1, hint: '6+8=14进1，3+2+1=6' },
+                { difficulty: 2, prompt: '45 + 23 = ?', equation: '45 + 23 = ?', options: [{text:'68'},{text:'78'},{text:'58'},{text:'65'}], correct: 0, hint: '5+3=8，4+2=6' },
+                { difficulty: 3, prompt: '50 - 26 = ?', equation: '50 - 26 = ?', options: [{text:'34'},{text:'24'},{text:'14'},{text:'26'}], correct: 1, hint: '0-6不够减，借1变10，10-6=4' },
+                { difficulty: 3, prompt: '73 + 19 = ?', equation: '73 + 19 = ?', options: [{text:'82'},{text:'92'},{text:'86'},{text:'88'}], correct: 1, hint: '3+9=12进1，7+1+1=9' },
+                { difficulty: 3, prompt: '82 - 37 = ?', equation: '82 - 37 = ?', options: [{text:'45'},{text:'55'},{text:'35'},{text:'48'}], correct: 0, hint: '2-7不够减，借1变12，12-7=5' },
+                { difficulty: 1, prompt: '6 + 3 = ?', equation: '6 + 3 = ?', tfA: 6, options: [{text:'8'},{text:'9'},{text:'7'},{text:'10'}], correct: 1, hint: '6个加3个' },
                 { difficulty: 2, prompt: '12 - 7 = ?', equation: '12 - 7 = ?', tfA: 12, tfB: 7, options: [{text:'4'},{text:'6'},{text:'5'},{text:'7'}], correct: 2, hint: '12分成10和2，10-7=3，3+2=5' },
-                { difficulty: 2, prompt: '17 + 6 = ?', equation: '17 + 6 = ?', options: [{text:'22'},{text:'23'},{text:'24'},{text:'21'}], correct: 1, hint: '7+6=13进1，1+1=2，结果是23' },
-                { difficulty: 3, prompt: '38 + 45 = ?', equation: '38 + 45 = ?', options: [{text:'73'},{text:'83'},{text:'78'},{text:'88'}], correct: 1, hint: '8+5=13进1，3+4+1=8，结果是83' },
-                { difficulty: 3, prompt: '60 - 28 = ?', equation: '60 - 28 = ?', options: [{text:'32'},{text:'42'},{text:'38'},{text:'22'}], correct: 0, hint: '0-8不够减，借1变10，10-8=2，5-2=3' }
+                { difficulty: 2, prompt: '17 + 6 = ?', equation: '17 + 6 = ?', options: [{text:'22'},{text:'23'},{text:'24'},{text:'21'}], correct: 1, hint: '7+6=13进1，1+1=2' },
+                { difficulty: 3, prompt: '38 + 45 = ?', equation: '38 + 45 = ?', options: [{text:'73'},{text:'83'},{text:'78'},{text:'88'}], correct: 1, hint: '8+5=13进1，3+4+1=8' },
+                { difficulty: 3, prompt: '60 - 28 = ?', equation: '60 - 28 = ?', options: [{text:'32'},{text:'42'},{text:'38'},{text:'22'}], correct: 0, hint: '0-8不够减，借1变10，10-8=2' },
+                { difficulty: 1, prompt: '5 + 5 = ?', equation: '5 + 5 = ?', tfA: 5, options: [{text:'8'},{text:'10'},{text:'9'},{text:'11'}], correct: 1, hint: '5个加5个' },
+                { difficulty: 1, prompt: '10 - 4 = ?', equation: '10 - 4 = ?', tfA: 10, tfB: 4, options: [{text:'5'},{text:'6'},{text:'7'},{text:'4'}], correct: 1, hint: '10个拿走4个' },
+                { difficulty: 2, prompt: '23 + 15 = ?', equation: '23 + 15 = ?', options: [{text:'38'},{text:'37'},{text:'28'},{text:'48'}], correct: 0, hint: '3+5=8，2+1=3' },
+                { difficulty: 2, prompt: '20 - 9 = ?', equation: '20 - 9 = ?', options: [{text:'11'},{text:'12'},{text:'10'},{text:'9'}], correct: 0, hint: '20分成10和10，10-9=1，10+1=11' },
+                { difficulty: 3, prompt: '47 + 36 = ?', equation: '47 + 36 = ?', options: [{text:'73'},{text:'83'},{text:'81'},{text:'85'}], correct: 1, hint: '7+6=13进1，4+3+1=8' },
+                { difficulty: 3, prompt: '91 - 45 = ?', equation: '91 - 45 = ?', options: [{text:'46'},{text:'56'},{text:'44'},{text:'54'}], correct: 0, hint: '1-5不够减，借1变11，11-5=6，8-4=4' },
+                { difficulty: 2, prompt: '34 + 12 = ?', equation: '34 + 12 = ?', options: [{text:'46'},{text:'36'},{text:'48'},{text:'44'}], correct: 0, hint: '4+2=6，3+1=4' },
+                { difficulty: 2, prompt: '18 - 9 = ?', equation: '18 - 9 = ?', options: [{text:'8'},{text:'9'},{text:'10'},{text:'7'}], correct: 1, hint: '18分成10和8，10-9=1，1+8=9' },
+                { difficulty: 3, prompt: '56 + 27 = ?', equation: '56 + 27 = ?', options: [{text:'73'},{text:'83'},{text:'81'},{text:'85'}], correct: 1, hint: '6+7=13进1，5+2+1=8' },
+                { difficulty: 3, prompt: '70 - 34 = ?', equation: '70 - 34 = ?', options: [{text:'36'},{text:'46'},{text:'34'},{text:'44'}], correct: 0, hint: '0-4不够减，借1变10，10-4=6，6-3=3' },
+                { difficulty: 1, prompt: '7 + 2 = ?', equation: '7 + 2 = ?', tfA: 7, options: [{text:'8'},{text:'9'},{text:'10'},{text:'7'}], correct: 1, hint: '7个加2个' },
+                { difficulty: 2, prompt: '14 - 6 = ?', equation: '14 - 6 = ?', options: [{text:'7'},{text:'8'},{text:'9'},{text:'6'}], correct: 1, hint: '14分成10和4，10-6=4，4+4=8' },
+                { difficulty: 3, prompt: '64 + 29 = ?', equation: '64 + 29 = ?', options: [{text:'83'},{text:'93'},{text:'85'},{text:'89'}], correct: 1, hint: '4+9=13进1，6+2+1=9' },
+                { difficulty: 3, prompt: '85 - 48 = ?', equation: '85 - 48 = ?', options: [{text:'37'},{text:'47'},{text:'33'},{text:'43'}], correct: 0, hint: '5-8不够减，借1变15，15-8=7，7-4=3' },
+                { difficulty: 2, prompt: '29 + 11 = ?', equation: '29 + 11 = ?', options: [{text:'39'},{text:'40'},{text:'38'},{text:'30'}], correct: 1, hint: '9+1=10进1，2+1+1=4' }
             ]
         },
         english: {
             title: '英语星球 · 每日练习', color: '#7BB661', bg: '#EDF5E6', lang: 'en-US', hasAudio: true,
             questions: [
                 { difficulty: 1, prompt: 'Which letter says /b/?', display: '/b/', speakText: 'b', options: [{text:'B',speak:'b'},{text:'D',speak:'d'},{text:'P',speak:'p'},{text:'T',speak:'t'}], correct: 0, hint: 'B says /b/, like in "ball"' },
-                { difficulty: 1, prompt: 'c-a-t makes what word?', display: 'c-a-t', speakText: 'cat', options: [{text:'cat',speak:'cat'},{text:'cut',speak:'cut'},{text:'cot',speak:'cot'},{text:'cap',speak:'cap'}], correct: 0, hint: 'c-a-t, /k/ /æ/ /t/' },
-                { difficulty: 2, prompt: 'What is the first sound of "sun"?', display: 'sun', speakText: 'sun', options: [{text:'/s/',speak:'s'},{text:'/n/',speak:'n'},{text:'/m/',speak:'m'},{text:'/r/',speak:'r'}], correct: 0, hint: 'The first letter is S, it says /s/' },
+                { difficulty: 1, prompt: 'c-a-t makes what word?', display: 'c-a-t', speakText: 'cat', options: [{text:'cat',speak:'cat'},{text:'cut',speak:'cut'},{text:'cot',speak:'cot'},{text:'cap',speak:'cap'}], correct: 0, hint: 'c-a-t, /k/ /ae/ /t/' },
+                { difficulty: 2, prompt: 'What is the first sound of "sun"?', display: 'sun', speakText: 'sun', options: [{text:'/s/',speak:'s'},{text:'/n/',speak:'n'},{text:'/m/',speak:'m'},{text:'/r/',speak:'r'}], correct: 0, hint: 'The first letter is S' },
                 { difficulty: 2, prompt: 'Which rhymes with "hat"?', display: 'hat', speakText: 'hat', options: [{text:'cat',speak:'cat'},{text:'dog',speak:'dog'},{text:'sun',speak:'sun'},{text:'pig',speak:'pig'}], correct: 0, hint: 'Rhyming words end with the same sound: -at' },
-                { difficulty: 2, prompt: 'd_g — what letter is missing?', display: 'd_g', speakText: 'dog', options: [{text:'o',speak:'o'},{text:'a',speak:'a'},{text:'e',speak:'e'},{text:'u',speak:'u'}], correct: 0, hint: 'd-o-g spells "dog"' },
+                { difficulty: 2, prompt: 'd_g - what letter is missing?', display: 'd_g', speakText: 'dog', options: [{text:'o',speak:'o'},{text:'a',speak:'a'},{text:'e',speak:'e'},{text:'u',speak:'u'}], correct: 0, hint: 'd-o-g spells "dog"' },
                 { difficulty: 2, prompt: 'Which vowel is in "pig"?', display: 'pig', speakText: 'pig', options: [{text:'i',speak:'i'},{text:'a',speak:'a'},{text:'e',speak:'e'},{text:'o',speak:'o'}], correct: 0, hint: 'p-i-g, the middle letter is i' },
-                { difficulty: 2, prompt: 'h-a-t makes what word?', display: 'h-a-t', speakText: 'hat', options: [{text:'hat',speak:'hat'},{text:'hot',speak:'hot'},{text:'hit',speak:'hit'},{text:'hut',speak:'hut'}], correct: 0, hint: 'h-a-t, /h/ /æ/ /t/' },
-                { difficulty: 1, prompt: 'Which means "小狗"?', display: '小狗', speakText: 'dog', options: [{text:'dog',speak:'dog'},{text:'cat',speak:'cat'},{text:'bird',speak:'bird'},{text:'fish',speak:'fish'}], correct: 0, hint: 'A dog says "woof woof!"' },
-                { difficulty: 3, prompt: 's-u-n makes what word?', display: 's-u-n', speakText: 'sun', options: [{text:'sun',speak:'sun'},{text:'run',speak:'run'},{text:'bun',speak:'bun'},{text:'fun',speak:'fun'}], correct: 0, hint: 's-u-n, /s/ /ʌ/ /n/' },
-                { difficulty: 3, prompt: 'I see a ___', display: 'I see a ___', speakText: 'I see a cat', options: [{text:'cat',speak:'cat'},{text:'run',speak:'run'},{text:'big',speak:'big'},{text:'go',speak:'go'}], correct: 0, hint: 'We need a noun (a thing) here' },
+                { difficulty: 2, prompt: 'h-a-t makes what word?', display: 'h-a-t', speakText: 'hat', options: [{text:'hat',speak:'hat'},{text:'hot',speak:'hot'},{text:'hit',speak:'hit'},{text:'hut',speak:'hut'}], correct: 0, hint: 'h-a-t' },
+                { difficulty: 1, prompt: 'Which means "dog"?', display: 'dog', speakText: 'dog', options: [{text:'dog',speak:'dog'},{text:'cat',speak:'cat'},{text:'bird',speak:'bird'},{text:'fish',speak:'fish'}], correct: 0, hint: 'A dog says "woof woof!"' },
+                { difficulty: 3, prompt: 's-u-n makes what word?', display: 's-u-n', speakText: 'sun', options: [{text:'sun',speak:'sun'},{text:'run',speak:'run'},{text:'bun',speak:'bun'},{text:'fun',speak:'fun'}], correct: 0, hint: 's-u-n' },
+                { difficulty: 3, prompt: 'I see a ___', display: 'I see a ___', speakText: 'I see a cat', options: [{text:'cat',speak:'cat'},{text:'run',speak:'run'},{text:'big',speak:'big'},{text:'go',speak:'go'}], correct: 0, hint: 'We need a noun (a thing)' },
                 { difficulty: 1, prompt: 'Which letter says /d/?', display: '/d/', speakText: 'd', options: [{text:'D',speak:'d'},{text:'B',speak:'b'},{text:'T',speak:'t'},{text:'G',speak:'g'}], correct: 0, hint: 'D says /d/, like in "dog"' },
-                { difficulty: 2, prompt: 'b-a-t makes what word?', display: 'b-a-t', speakText: 'bat', options: [{text:'bat',speak:'bat'},{text:'bit',speak:'bit'},{text:'but',speak:'but'},{text:'bet',speak:'bet'}], correct: 0, hint: 'b-a-t, /b/ /æ/ /t/' },
+                { difficulty: 2, prompt: 'b-a-t makes what word?', display: 'b-a-t', speakText: 'bat', options: [{text:'bat',speak:'bat'},{text:'bit',speak:'bit'},{text:'but',speak:'but'},{text:'bet',speak:'bet'}], correct: 0, hint: 'b-a-t' },
                 { difficulty: 2, prompt: 'What is the last sound of "sun"?', display: 'sun', speakText: 'sun', options: [{text:'/n/',speak:'n'},{text:'/s/',speak:'s'},{text:'/t/',speak:'t'},{text:'/m/',speak:'m'}], correct: 0, hint: 'The last letter is N' },
-                { difficulty: 2, prompt: 'p-i-g makes what word?', display: 'p-i-g', speakText: 'pig', options: [{text:'pig',speak:'pig'},{text:'peg',speak:'peg'},{text:'pug',speak:'pug'},{text:'pen',speak:'pen'}], correct: 0, hint: 'p-i-g, /p/ /ɪ/ /g/' },
-                { difficulty: 3, prompt: 'I have a ___', display: 'I have a ___', speakText: 'I have a dog', options: [{text:'dog',speak:'dog'},{text:'blue',speak:'blue'},{text:'jump',speak:'jump'},{text:'fast',speak:'fast'}], correct: 0, hint: 'We need a noun (a thing) here' }
-            ]
-        },
-        piano: {
-            title: '钢琴音塔 · 每日练习', color: '#B19CD9', bg: '#F0EBF8', lang: null, hasAudio: false,
-            questions: [
-                { difficulty: 1, prompt: '中央C在哪里？', svgType: 'piano', highlight: 'C', label: 'C', options: [{text:'最左边'},{text:'正中间'},{text:'最右边'},{text:'没有C键'}], correct: 1, hint: '中央C在钢琴的正中间位置' },
-                { difficulty: 1, prompt: 'C后面的白键是？', svgType: 'piano', highlight: 'D', label: 'D', options: [{text:'D'},{text:'E'},{text:'B'},{text:'F'}], correct: 0, hint: 'C-D-E-F-G-A-B-C' },
-                { difficulty: 1, prompt: '"Do"对应的音名是？', svgType: 'piano', highlight: 'C', label: 'Do=C', options: [{text:'C'},{text:'D'},{text:'E'},{text:'G'}], correct: 0, hint: 'Do-Re-Mi-Fa-Sol 对应 C-D-E-F-G' },
-                { difficulty: 2, prompt: '一个八度有几个白键？', svgType: 'piano', highlight: 'C', label: '7个', options: [{text:'5个'},{text:'6个'},{text:'7个'},{text:'8个'}], correct: 2, hint: 'C-D-E-F-G-A-B，数一数' },
-                { difficulty: 2, prompt: '1指（大拇指）弹哪个键？', svgType: 'piano', highlight: 'C', label: '1指=C', options: [{text:'C'},{text:'D'},{text:'E'},{text:'F'}], correct: 0, hint: '右手1指通常放在C上' },
-                { difficulty: 2, prompt: 'C和D之间的黑键是？', svgType: 'piano', highlight: 'C', label: 'C#', options: [{text:'C#'},{text:'D#'},{text:'F#'},{text:'没有黑键'}], correct: 0, hint: 'C和D之间有一个黑键' },
-                { difficulty: 2, prompt: 'E后面的白键是？', svgType: 'piano', highlight: 'F', label: 'F', options: [{text:'F'},{text:'G'},{text:'D'},{text:'B'}], correct: 0, hint: 'E-F之间没有黑键' },
-                { difficulty: 2, prompt: 'C和G哪个音更高？', svgType: 'piano', highlight: 'G', label: 'G更高', options: [{text:'C更高'},{text:'G更高'},{text:'一样高'},{text:'无法比较'}], correct: 1, hint: '从左到右音越来越高' },
-                { difficulty: 3, prompt: '一个八度有几个黑键？', svgType: 'piano', highlight: 'C', label: '5个', options: [{text:'3个'},{text:'4个'},{text:'5个'},{text:'6个'}], correct: 2, hint: 'C# D# F# G# A#，数一数' },
-                { difficulty: 1, prompt: '"Re"对应的音名是？', svgType: 'piano', highlight: 'D', label: 'Re=D', options: [{text:'C'},{text:'D'},{text:'E'},{text:'F'}], correct: 1, hint: 'Do-Re-Mi = C-D-E' },
-                { difficulty: 1, prompt: '"Mi"对应的音名是？', svgType: 'piano', highlight: 'E', label: 'Mi=E', options: [{text:'D'},{text:'E'},{text:'F'},{text:'G'}], correct: 1, hint: 'Do-Re-Mi = C-D-E' },
-                { difficulty: 2, prompt: 'F后面的白键是？', svgType: 'piano', highlight: 'G', label: 'G', options: [{text:'G'},{text:'A'},{text:'E'},{text:'H'}], correct: 0, hint: 'F-G-A-B-C' },
-                { difficulty: 2, prompt: '2指（食指）弹哪个键？', svgType: 'piano', highlight: 'D', label: '2指=D', options: [{text:'C'},{text:'D'},{text:'E'},{text:'F'}], correct: 1, hint: '右手2指通常放在D上' },
-                { difficulty: 2, prompt: '"La"对应的音名是？', svgType: 'piano', highlight: 'A', label: 'La=A', options: [{text:'A'},{text:'B'},{text:'G'},{text:'F'}], correct: 0, hint: 'Do-Re-Mi-Fa-Sol-La = C-D-E-F-G-A' },
-                { difficulty: 3, prompt: 'B后面的白键是？', svgType: 'piano', highlight: 'C2', label: 'C(高八度)', options: [{text:'C'},{text:'A'},{text:'D'},{text:'没有键了'}], correct: 0, hint: 'B之后回到C，高了一个八度' }
-            ]
-        },
-        chess: {
-            title: '象棋王国 · 每日练习', color: '#FFC857', bg: '#FFF8E0', lang: null, hasAudio: false,
-            questions: [
-                { difficulty: 1, prompt: '国王（King）怎么走？', svgType: 'chess', piece: '王', pieceColor: '#FF8C7A', options: [{text:'任意方向走1格'},{text:'只能横着走'},{text:'斜着走任意格'},{text:'跳着走'}], correct: 0, hint: '国王每次只能走一步' },
-                { difficulty: 2, prompt: '车（Rook）怎么走？', svgType: 'chess', piece: '车', pieceColor: '#6BB6E0', options: [{text:'斜着走'},{text:'横竖任意格'},{text:'只能走1格'},{text:'L形走法'}], correct: 1, hint: '车只能走直线' },
-                { difficulty: 2, prompt: '象（Bishop）怎么走？', svgType: 'chess', piece: '象', pieceColor: '#7BB661', options: [{text:'横竖走'},{text:'斜着走任意格'},{text:'只能走2格'},{text:'L形走法'}], correct: 1, hint: '象只走对角线' },
-                { difficulty: 2, prompt: '马（Knight）怎么走？', svgType: 'chess', piece: '马', pieceColor: '#B19CD9', options: [{text:'直线走'},{text:'L形（2+1）'},{text:'斜线走'},{text:'任意方向1格'}], correct: 1, hint: '马走日字，先走2格再转1格' },
-                { difficulty: 3, prompt: '哪个棋子可以跳过其他棋子？', svgType: 'chess', piece: '马', pieceColor: '#B19CD9', options: [{text:'马'},{text:'车'},{text:'象'},{text:'兵'}], correct: 0, hint: '只有马可以跳跃' },
-                { difficulty: 1, prompt: '每方有几个兵（Pawn）？', svgType: 'chess', piece: '兵', pieceColor: '#FFC857', options: [{text:'6个'},{text:'7个'},{text:'8个'},{text:'9个'}], correct: 2, hint: '第二排全是兵' },
-                { difficulty: 2, prompt: '最厉害的棋子是？', svgType: 'chess', piece: '后', pieceColor: '#FF8C7A', options: [{text:'王'},{text:'后'},{text:'车'},{text:'马'}], correct: 1, hint: '后可以走任意方向任意格' },
-                { difficulty: 1, prompt: '棋盘有几个格子？', svgType: 'chess', piece: '盘', pieceColor: '#5C5147', options: [{text:'36个'},{text:'49个'},{text:'64个'},{text:'81个'}], correct: 2, hint: '8×8=64' },
-                { difficulty: 2, prompt: '棋盘角落放什么棋子？', svgType: 'chess', piece: '车', pieceColor: '#6BB6E0', options: [{text:'车'},{text:'马'},{text:'象'},{text:'后'}], correct: 0, hint: '四个角都是车' },
-                { difficulty: 3, prompt: '国王被攻击但没被将死叫什么？', svgType: 'chess', piece: '军', pieceColor: '#FF8C7A', options: [{text:'将军'},{text:'和棋'},{text:'弃子'},{text:'升变'}], correct: 0, hint: 'King in check but not checkmate' },
-                { difficulty: 2, prompt: '后（Queen）怎么走？', svgType: 'chess', piece: '后', pieceColor: '#FF8C7A', options: [{text:'任意方向任意格'},{text:'只能走1格'},{text:'只能斜着走'},{text:'只能横着走'}], correct: 0, hint: '后是最强的棋子，什么方向都能走' },
-                { difficulty: 2, prompt: '兵（Pawn）怎么走？', svgType: 'chess', piece: '兵', pieceColor: '#FFC857', options: [{text:'向前走1格'},{text:'任意方向走'},{text:'斜着走'},{text:'L形走法'}], correct: 0, hint: '兵只能向前走，吃子时斜走' },
-                { difficulty: 2, prompt: '王和后分别放在哪一列？', svgType: 'chess', piece: '王后', pieceColor: '#FF8C7A', options: [{text:'王在e列，后在d列'},{text:'王在d列，后在e列'},{text:'都在d列'},{text:'都在e列'}], correct: 0, hint: '白后在d列(亮格)，白王在e列' },
-                { difficulty: 1, prompt: '棋盘是什么颜色的格子组成的？', svgType: 'chess', piece: '盘', pieceColor: '#5C5147', options: [{text:'黑白相间'},{text:'红黑相间'},{text:'全白'},{text:'全黑'}], correct: 0, hint: '国际象棋棋盘是黑白格交替的' },
-                { difficulty: 3, prompt: '每方棋子总数是多少？', svgType: 'chess', piece: '全', pieceColor: '#5C5147', options: [{text:'14个'},{text:'15个'},{text:'16个'},{text:'18个'}], correct: 2, hint: '8兵+2车+2马+2象+1王+1后=16' }
+                { difficulty: 2, prompt: 'p-i-g makes what word?', display: 'p-i-g', speakText: 'pig', options: [{text:'pig',speak:'pig'},{text:'peg',speak:'peg'},{text:'pug',speak:'pug'},{text:'pen',speak:'pen'}], correct: 0, hint: 'p-i-g' },
+                { difficulty: 3, prompt: 'I have a ___', display: 'I have a ___', speakText: 'I have a dog', options: [{text:'dog',speak:'dog'},{text:'blue',speak:'blue'},{text:'jump',speak:'jump'},{text:'fast',speak:'fast'}], correct: 0, hint: 'We need a noun' },
+                { difficulty: 1, prompt: 'Which letter says /m/?', display: '/m/', speakText: 'm', options: [{text:'M',speak:'m'},{text:'N',speak:'n'},{text:'L',speak:'l'},{text:'R',speak:'r'}], correct: 0, hint: 'M says /m/, like in "mom"' },
+                { difficulty: 2, prompt: 'n-e-t makes what word?', display: 'n-e-t', speakText: 'net', options: [{text:'net',speak:'net'},{text:'nut',speak:'nut'},{text:'not',speak:'not'},{text:'nap',speak:'nap'}], correct: 0, hint: 'n-e-t' },
+                { difficulty: 2, prompt: 'Which rhymes with "big"?', display: 'big', speakText: 'big', options: [{text:'pig',speak:'pig'},{text:'cat',speak:'cat'},{text:'dog',speak:'dog'},{text:'sun',speak:'sun'}], correct: 0, hint: 'Rhyming words end with -ig' },
+                { difficulty: 3, prompt: 'r-u-n makes what word?', display: 'r-u-n', speakText: 'run', options: [{text:'run',speak:'run'},{text:'ran',speak:'ran'},{text:'sun',speak:'sun'},{text:'bun',speak:'bun'}], correct: 0, hint: 'r-u-n' },
+                { difficulty: 1, prompt: 'Which means "cat"?', display: 'cat', speakText: 'cat', options: [{text:'cat',speak:'cat'},{text:'dog',speak:'dog'},{text:'bird',speak:'bird'},{text:'fish',speak:'fish'}], correct: 0, hint: 'A cat says "meow!"' },
+                { difficulty: 2, prompt: 'Which vowel is in "hat"?', display: 'hat', speakText: 'hat', options: [{text:'a',speak:'a'},{text:'i',speak:'i'},{text:'e',speak:'e'},{text:'o',speak:'o'}], correct: 0, hint: 'h-a-t, the middle letter is a' },
+                { difficulty: 2, prompt: 'l-e-g makes what word?', display: 'l-e-g', speakText: 'leg', options: [{text:'leg',speak:'leg'},{text:'log',speak:'log'},{text:'lag',speak:'lag'},{text:'lid',speak:'lid'}], correct: 0, hint: 'l-e-g' },
+                { difficulty: 3, prompt: 'She can ___', display: 'She can ___', speakText: 'She can run', options: [{text:'run',speak:'run'},{text:'cat',speak:'cat'},{text:'red',speak:'red'},{text:'sun',speak:'sun'}], correct: 0, hint: 'We need a verb (an action)' },
+                { difficulty: 1, prompt: 'Which letter says /s/?', display: '/s/', speakText: 's', options: [{text:'S',speak:'s'},{text:'Z',speak:'z'},{text:'F',speak:'f'},{text:'T',speak:'t'}], correct: 0, hint: 'S says /s/, like in "sun"' },
+                { difficulty: 2, prompt: 'Which rhymes with "sun"?', display: 'sun', speakText: 'sun', options: [{text:'run',speak:'run'},{text:'cat',speak:'cat'},{text:'hat',speak:'hat'},{text:'pig',speak:'pig'}], correct: 0, hint: 'Rhyming words end with -un' },
+                { difficulty: 3, prompt: 'h-o-t makes what word?', display: 'h-o-t', speakText: 'hot', options: [{text:'hot',speak:'hot'},{text:'hat',speak:'hat'},{text:'hit',speak:'hit'},{text:'hut',speak:'hut'}], correct: 0, hint: 'h-o-t' },
+                { difficulty: 2, prompt: 'What is the first sound of "dog"?', display: 'dog', speakText: 'dog', options: [{text:'/d/',speak:'d'},{text:'/g/',speak:'g'},{text:'/o/',speak:'o'},{text:'/m/',speak:'m'}], correct: 0, hint: 'The first letter is D' },
+                { difficulty: 1, prompt: 'Which means "fish"?', display: 'fish', speakText: 'fish', options: [{text:'fish',speak:'fish'},{text:'dog',speak:'dog'},{text:'cat',speak:'cat'},{text:'bird',speak:'bird'}], correct: 0, hint: 'A fish swims in water' },
+                { difficulty: 2, prompt: 'm-a-p makes what word?', display: 'm-a-p', speakText: 'map', options: [{text:'map',speak:'map'},{text:'mop',speak:'mop'},{text:'mip',speak:'mip'},{text:'mug',speak:'mug'}], correct: 0, hint: 'm-a-p' },
+                { difficulty: 3, prompt: 'The ___ is big', display: 'The ___ is big', speakText: 'The dog is big', options: [{text:'dog',speak:'dog'},{text:'run',speak:'run'},{text:'fast',speak:'fast'},{text:'jump',speak:'jump'}], correct: 0, hint: 'We need a noun' }
             ]
         },
         reading: {
@@ -321,19 +337,34 @@
             questions: [
                 { difficulty: 1, prompt: '"日"是什么意思？', svgType: 'reading', chars: ['日','是','什么'], highlights: [0], options: [{text:'太阳'},{text:'月亮'},{text:'星星'},{text:'云朵'}], correct: 0, hint: '日就是太阳' },
                 { difficulty: 1, prompt: '"水"是什么意思？', svgType: 'reading', chars: ['水','是','什么'], highlights: [0], options: [{text:'水'},{text:'火'},{text:'土'},{text:'木'}], correct: 0, hint: '喝水的水' },
-                { difficulty: 2, prompt: '"大"是什么意思？', svgType: 'reading', chars: ['大','是','什么'], highlights: [0], options: [{text:'很大'},{text:'很小'},{text:'不多'},{text:'中间'}], correct: 0, hint: '大象的"大"' },
+                { difficulty: 2, prompt: '"大"是什么意思？', svgType: 'reading', chars: ['大','是','什么'], highlights: [0], options: [{text:'很大'},{text:'很小'},{text:'不多'},{text:'中间'}], correct: 0, hint: '大象的大' },
                 { difficulty: 2, prompt: '小兔子___萝卜', svgType: 'reading', chars: ['小兔子','___','萝卜'], highlights: [1], options: [{text:'爱吃'},{text:'讨厌'},{text:'害怕'},{text:'不看'}], correct: 0, hint: '小兔子最喜欢吃萝卜' },
                 { difficulty: 2, prompt: '天上有___', svgType: 'reading', chars: ['天上有','___',''], highlights: [1], options: [{text:'白云'},{text:'小鱼'},{text:'草地'},{text:'大树'}], correct: 0, hint: '天上飘着什么？' },
                 { difficulty: 3, prompt: '___是森林之王', svgType: 'reading', chars: ['___','是','森林之王'], highlights: [0], options: [{text:'老虎'},{text:'兔子'},{text:'小鸟'},{text:'蚂蚁'}], correct: 0, hint: '谁最威风？' },
                 { difficulty: 1, prompt: '"口"是什么意思？', svgType: 'reading', chars: ['口','是','什么'], highlights: [0], options: [{text:'嘴巴'},{text:'眼睛'},{text:'耳朵'},{text:'鼻子'}], correct: 0, hint: '口就是嘴巴' },
                 { difficulty: 2, prompt: '"上"是什么意思？', svgType: 'reading', chars: ['上','是','什么'], highlights: [0], options: [{text:'上面'},{text:'下面'},{text:'左边'},{text:'右边'}], correct: 0, hint: '上下左右' },
                 { difficulty: 3, prompt: '小鸟在___上唱歌', svgType: 'reading', chars: ['小鸟在','___','唱歌'], highlights: [1], options: [{text:'树'},{text:'水里'},{text:'地下'},{text:'火里'}], correct: 0, hint: '小鸟在哪里唱歌？' },
-                { difficulty: 2, prompt: '"多"的反义词是？', svgType: 'reading', chars: ['多的','反义词','是？'], highlights: [2], options: [{text:'少'},{text:'大'},{text:'高'},{text:'好'}], correct: 0, hint: '多是少反义词' },
+                { difficulty: 2, prompt: '"多"的反义词是？', svgType: 'reading', chars: ['多的','反义词','是？'], highlights: [2], options: [{text:'少'},{text:'大'},{text:'高'},{text:'好'}], correct: 0, hint: '多的反义词' },
                 { difficulty: 1, prompt: '"月"是什么意思？', svgType: 'reading', chars: ['月','是','什么'], highlights: [0], options: [{text:'月亮'},{text:'太阳'},{text:'星星'},{text:'云朵'}], correct: 0, hint: '月就是月亮' },
                 { difficulty: 1, prompt: '"山"是什么意思？', svgType: 'reading', chars: ['山','是','什么'], highlights: [0], options: [{text:'高山'},{text:'大河'},{text:'大海'},{text:'平原'}], correct: 0, hint: '爬山的山' },
-                { difficulty: 2, prompt: '"小"的反义词是？', svgType: 'reading', chars: ['小的','反义词','是？'], highlights: [2], options: [{text:'大'},{text:'多'},{text:'高'},{text:'长'}], correct: 0, hint: '小的反义词是大' },
+                { difficulty: 2, prompt: '"小"的反义词是？', svgType: 'reading', chars: ['小的','反义词','是？'], highlights: [2], options: [{text:'大'},{text:'多'},{text:'高'},{text:'长'}], correct: 0, hint: '小的反义词' },
                 { difficulty: 2, prompt: '雨后天上有___', svgType: 'reading', chars: ['雨后天上','有','___'], highlights: [2], options: [{text:'彩虹'},{text:'小鱼'},{text:'草地'},{text:'大树'}], correct: 0, hint: '雨后天空会出现什么？' },
-                { difficulty: 2, prompt: '太阳从___升起', svgType: 'reading', chars: ['太阳从','___','升起'], highlights: [1], options: [{text:'东边'},{text:'西边'},{text:'南边'},{text:'北边'}], correct: 0, hint: '太阳从东边升起，西边落下' }
+                { difficulty: 2, prompt: '太阳从___升起', svgType: 'reading', chars: ['太阳从','___','升起'], highlights: [1], options: [{text:'东边'},{text:'西边'},{text:'南边'},{text:'北边'}], correct: 0, hint: '太阳从东边升起' },
+                { difficulty: 1, prompt: '"木"是什么意思？', svgType: 'reading', chars: ['木','是','什么'], highlights: [0], options: [{text:'树木'},{text:'石头'},{text:'水'},{text:'火'}], correct: 0, hint: '木就是树木' },
+                { difficulty: 2, prompt: '"高"的反义词是？', svgType: 'reading', chars: ['高的','反义词','是？'], highlights: [2], options: [{text:'矮'},{text:'大'},{text:'多'},{text:'长'}], correct: 0, hint: '高的反义词' },
+                { difficulty: 2, prompt: '小鱼在___里游', svgType: 'reading', chars: ['小鱼在','___','里游'], highlights: [1], options: [{text:'水'},{text:'天空'},{text:'树上'},{text:'地下'}], correct: 0, hint: '小鱼在哪里游？' },
+                { difficulty: 3, prompt: '春天___开了', svgType: 'reading', chars: ['春天','___','开了'], highlights: [1], options: [{text:'花'},{text:'雪'},{text:'叶子'},{text:'果实'}], correct: 0, hint: '春天什么开了？' },
+                { difficulty: 1, prompt: '"火"是什么意思？', svgType: 'reading', chars: ['火','是','什么'], highlights: [0], options: [{text:'火焰'},{text:'水'},{text:'风'},{text:'雨'}], correct: 0, hint: '火就是火焰' },
+                { difficulty: 2, prompt: '"长"的反义词是？', svgType: 'reading', chars: ['长的','反义词','是？'], highlights: [2], options: [{text:'短'},{text:'大'},{text:'高'},{text:'多'}], correct: 0, hint: '长的反义词' },
+                { difficulty: 3, prompt: '秋天___变黄了', svgType: 'reading', chars: ['秋天','___','变黄了'], highlights: [1], options: [{text:'树叶'},{text:'雪花'},{text:'花朵'},{text:'小草'}], correct: 0, hint: '秋天什么变黄了？' },
+                { difficulty: 1, prompt: '"手"是什么意思？', svgType: 'reading', chars: ['手','是','什么'], highlights: [0], options: [{text:'手掌'},{text:'脚'},{text:'头'},{text:'肚子'}], correct: 0, hint: '手就是手掌' },
+                { difficulty: 2, prompt: '猫喜欢抓___', svgType: 'reading', chars: ['猫喜欢','抓','___'], highlights: [2], options: [{text:'老鼠'},{text:'鱼'},{text:'鸟'},{text:'虫子'}], correct: 0, hint: '猫最喜欢抓什么？' },
+                { difficulty: 3, prompt: '"快"的反义词是？', svgType: 'reading', chars: ['快的','反义词','是？'], highlights: [2], options: [{text:'慢'},{text:'大'},{text:'高'},{text:'多'}], correct: 0, hint: '快的反义词' },
+                { difficulty: 1, prompt: '"天"是什么意思？', svgType: 'reading', chars: ['天','是','什么'], highlights: [0], options: [{text:'天空'},{text:'大地'},{text:'海洋'},{text:'高山'}], correct: 0, hint: '天就是天空' },
+                { difficulty: 2, prompt: '晚上天上有很多___', svgType: 'reading', chars: ['晚上天上','有很多','___'], highlights: [2], options: [{text:'星星'},{text:'白云'},{text:'彩虹'},{text:'太阳'}], correct: 0, hint: '晚上天上有星星' },
+                { difficulty: 1, prompt: '"目"是什么意思？', svgType: 'reading', chars: ['目','是','什么'], highlights: [0], options: [{text:'眼睛'},{text:'嘴巴'},{text:'耳朵'},{text:'鼻子'}], correct: 0, hint: '目就是眼睛' },
+                { difficulty: 2, prompt: '"白"的反义词是？', svgType: 'reading', chars: ['白的','反义词','是？'], highlights: [2], options: [{text:'黑'},{text:'红'},{text:'蓝'},{text:'绿'}], correct: 0, hint: '白的反义词' },
+                { difficulty: 3, prompt: '冬天___飘下来了', svgType: 'reading', chars: ['冬天','___','飘下来了'], highlights: [1], options: [{text:'雪花'},{text:'花瓣'},{text:'树叶'},{text:'雨滴'}], correct: 0, hint: '冬天飘什么？' }
             ]
         }
     };
@@ -421,16 +452,57 @@
         return (curr - prev) / 86400000;
     }
 
-    // ===== Random Question Selection =====
+    // ===== Wrong Answer Tracking =====
+    function getWrongKey(date) {
+        if (!date) date = new Date();
+        return 'wmy_wrong_' + date.getFullYear() + '_' + (date.getMonth() + 1) + '_' + date.getDate();
+    }
+
+    function saveWrongAnswers(subject, questions, answers) {
+        try {
+            var key = getWrongKey();
+            var data = JSON.parse(localStorage.getItem(key) || '{}');
+            if (!data[subject]) data[subject] = [];
+            for (var k in answers) {
+                var qi = parseInt(k);
+                if (answers[qi] !== questions[qi].correct) {
+                    data[subject].push({ q: questions[qi], userAns: answers[qi] });
+                }
+            }
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch(e) {}
+    }
+
+    function getYesterdayWrongAnswers() {
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        try { return JSON.parse(localStorage.getItem(getWrongKey(yesterday)) || '{}'); }
+        catch(e) { return {}; }
+    }
+
+    function hasYesterdayWrong() {
+        var wrong = getYesterdayWrongAnswers();
+        var total = 0;
+        for (var s in wrong) total += wrong[s].length;
+        return total > 0;
+    }
+
+    function getYesterdayWrongCount() {
+        var wrong = getYesterdayWrongAnswers();
+        var total = 0;
+        for (var s in wrong) total += wrong[s].length;
+        return total;
+    }
+
+    // ===== Random Question Selection (seeded daily rotation) =====
     function getDailyQuestions(subject) {
         var bank = questionBanks[subject];
         if (!bank) return [];
-        var all = bank.questions.slice();
-        for (var i = all.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var tmp = all[i]; all[i] = all[j]; all[j] = tmp;
-        }
-        return all.slice(0, QUESTIONS_PER_QUIZ);
+        var d = new Date();
+        var dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+        var seed = dayOfYear + subject.charCodeAt(0) * 100;
+        var shuffled = seededShuffle(bank.questions, seed);
+        return shuffled.slice(0, QUESTIONS_PER_QUIZ);
     }
 
     // ===== State =====
@@ -467,6 +539,9 @@
         map: { id: 'screen-map', title: '暑假冒险大地图' },
         report: { id: 'screen-report', title: '能力评估报告' },
         quiz: { id: 'screen-quiz', title: '每日练习 · 答题闯关' },
+        piano: { id: 'screen-piano', title: '钢琴音塔 · 每日练习' },
+        chess: { id: 'screen-chess', title: '象棋王国 · 对战训练' },
+        review: { id: 'screen-quiz', title: '错题复习' },
         tasks: { id: 'screen-map', title: '今日任务', scrollTarget: '.task-list' },
         errors: { id: 'screen-report', title: '错题巩固' },
         farm: { id: 'screen-farm', title: '孟原的小农场' }
@@ -760,7 +835,8 @@
         });
         saveDailyProgress(progress);
 
-        // Award farm food based on subject and correct answers
+        // Save wrong answers for next-day review
+        saveWrongAnswers(currentSubject, currentQuestions, answers);
         var foodItem = null;
         for (var fi = 0; fi < FARM_FOODS.length; fi++) {
             if (FARM_FOODS[fi].subject === currentSubject) {
@@ -928,6 +1004,8 @@
 
     // ===== Enter Quiz =====
     function enterQuiz(subject) {
+        if (subject === 'piano') { enterPianoPractice(); return; }
+        if (subject === 'chess') { enterChessTraining(); return; }
         var bank = questionBanks[subject];
         if (!bank) return;
         currentSubject = subject;
@@ -946,9 +1024,219 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ===== Piano Practice Integration =====
+    function enterPianoPractice() {
+        currentSubject = 'piano';
+        document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+        var pianoScreen = document.getElementById('screen-piano');
+        if (pianoScreen) pianoScreen.classList.add('active');
+        else { quizScreen.classList.add('active'); }
+        pageTitle.textContent = '钢琴音塔 · 每日练习';
+        sidebarItems.forEach(function(item) { item.classList.remove('active'); });
+        bottomNavItems.forEach(function(item) { item.classList.remove('active'); });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        var container = document.getElementById('pianoContainer');
+        if (container && window.PianoModule) {
+            window.PianoModule.renderPianoPractice(container, function(correct, total) {
+                completePianoPractice(correct, total);
+            });
+        }
+    }
+
+    function completePianoPractice(correct, total) {
+        var stars = Math.round(correct / total * 20);
+        var progress = getDailyProgress();
+        if (progress.completed.indexOf('piano') < 0) progress.completed.push('piano');
+        progress.subjects['piano'] = { correct: correct, total: total, stars: stars };
+        progress.stars = 0;
+        progress.completed.forEach(function(subj) {
+            if (progress.subjects[subj]) progress.stars += progress.subjects[subj].stars;
+        });
+        saveDailyProgress(progress);
+        // Award farm food
+        var farmState = getFarmState();
+        if (!farmState.food['grass']) farmState.food['grass'] = 0;
+        farmState.food['grass'] += correct;
+        saveFarmState(farmState);
+        showStarAnimation('piano', correct, stars, function() {
+            if (progress.completed.length >= 6) {
+                showCelebration(function() { switchScreen('map'); updateCheckinUI(); });
+            } else {
+                showToast(CHILD_NAME + '弹完了钢琴练习！获得🌿青草×' + correct + '！');
+                setTimeout(function() { switchScreen('map'); updateCheckinUI(); }, 1500);
+            }
+        });
+    }
+
+    // ===== Chess Training Integration =====
+    function enterChessTraining() {
+        currentSubject = 'chess';
+        document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+        var chessScreen = document.getElementById('screen-chess');
+        if (chessScreen) chessScreen.classList.add('active');
+        else { quizScreen.classList.add('active'); }
+        pageTitle.textContent = '象棋王国 · 对战训练';
+        sidebarItems.forEach(function(item) { item.classList.remove('active'); });
+        bottomNavItems.forEach(function(item) { item.classList.remove('active'); });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        var container = document.getElementById('chessContainer');
+        if (container && window.ChessModule) {
+            window.ChessModule.renderChessTraining(container, function(correct, total, starsCount) {
+                completeChessTraining(correct, total, starsCount);
+            });
+        }
+    }
+
+    function completeChessTraining(correct, total, starsCount) {
+        var stars = correct * 2;
+        var progress = getDailyProgress();
+        if (progress.completed.indexOf('chess') < 0) progress.completed.push('chess');
+        progress.subjects['chess'] = { correct: correct, total: total, stars: stars };
+        progress.stars = 0;
+        progress.completed.forEach(function(subj) {
+            if (progress.subjects[subj]) progress.stars += progress.subjects[subj].stars;
+        });
+        saveDailyProgress(progress);
+        // Award farm food
+        var farmState = getFarmState();
+        if (!farmState.food['slop']) farmState.food['slop'] = 0;
+        farmState.food['slop'] += correct;
+        saveFarmState(farmState);
+        showStarAnimation('chess', correct, stars, function() {
+            if (progress.completed.length >= 6) {
+                showCelebration(function() { switchScreen('map'); updateCheckinUI(); });
+            } else {
+                showToast(CHILD_NAME + '完成象棋训练！获得🫘饲料×' + correct + '！');
+                setTimeout(function() { switchScreen('map'); updateCheckinUI(); }, 1500);
+            }
+        });
+    }
+
+    // ===== Review Mode (yesterday's wrong answers) =====
+    var reviewState = { questions: [], currentIdx: 0, correctCount: 0 };
+    function startReview() {
+        var wrong = getYesterdayWrongAnswers();
+        var questions = [];
+        for (var subj in wrong) {
+            wrong[subj].forEach(function(item) {
+                questions.push({ subject: subj, q: item.q, userAns: item.userAns });
+            });
+        }
+        if (questions.length === 0) { showToast('昨天没有错题，直接开始今天的练习吧！'); return; }
+        reviewState.questions = questions;
+        reviewState.currentIdx = 0;
+        reviewState.correctCount = 0;
+        renderReviewQuestion();
+    }
+
+    function renderReviewQuestion() {
+        if (reviewState.currentIdx >= reviewState.questions.length) {
+            // Review complete
+            var correct = reviewState.correctCount;
+            var total = reviewState.questions.length;
+            showToast('复习完成！' + correct + '/' + total + '题答对，开始今天的练习吧！');
+            setTimeout(function() { switchScreen('map'); }, 2000);
+            return;
+        }
+        var item = reviewState.questions[reviewState.currentIdx];
+        var subj = item.subject;
+        var q = item.q;
+        var bank = questionBanks[subj];
+        if (!bank) { reviewState.currentIdx++; renderReviewQuestion(); return; }
+
+        document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+        quizScreen.classList.add('active');
+        pageTitle.textContent = '错题复习 · ' + bank.title.split(' ')[0];
+
+        if (progressTrackContainer) {
+            progressTrackContainer.innerHTML = '<div style="text-align:center;padding:8px;color:#FF8C7A;font-weight:700;">复习第 ' + (reviewState.currentIdx + 1) + '/' + reviewState.questions.length + ' 题</div>';
+        }
+        if (questionCard) {
+            questionCard.style.background = '#FFF0EE';
+            questionCard.style.boxShadow = '0 4px 20px rgba(255,140,122,0.12)';
+        }
+        if (questionBadge) {
+            questionBadge.style.background = '#FF8C7A';
+            questionBadge.textContent = '复习' + (reviewState.currentIdx + 1);
+        }
+        if (difficultyStars) difficultyStars.innerHTML = generateStars(q.difficulty);
+        if (mascotText) mascotText.textContent = CHILD_NAME + '，这是昨天的错题，再试一次！';
+        if (questionContent) questionContent.innerHTML = generateQuestionSVG(subj, q);
+        if (speakQuestionBtn) {
+            if (bank.hasAudio) {
+                speakQuestionBtn.style.display = 'flex';
+                speakQuestionBtn.style.color = '#FF8C7A';
+                speakQuestionBtn.onclick = function() { speak(q.speakText || q.display, bank.lang); };
+            } else {
+                speakQuestionBtn.style.display = 'none';
+            }
+        }
+
+        // Render answer options
+        answerGrid.innerHTML = '';
+        var letters = ['A', 'B', 'C', 'D'];
+        q.options.forEach(function(opt, idx) {
+            var div = document.createElement('div');
+            div.className = 'answer-option';
+            div.style.borderColor = 'rgba(255,140,122,0.3)';
+            var badge = document.createElement('span');
+            badge.className = 'option-badge';
+            badge.style.background = '#FF8C7A';
+            badge.textContent = letters[idx];
+            var val = document.createElement('span');
+            val.className = 'option-value';
+            val.textContent = opt.text;
+            div.appendChild(badge);
+            div.appendChild(val);
+            if (bank.hasAudio && opt.speak) {
+                var speakBtn = document.createElement('button');
+                speakBtn.className = 'option-speak-btn';
+                speakBtn.style.color = '#FF8C7A';
+                speakBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9V15H8L13 19V5L8 9H4Z" fill="currentColor"/><path d="M16 8C17.5 9 18 10.5 18 12C18 13.5 17.5 15 16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>';
+                speakBtn.addEventListener('click', function(e) { e.stopPropagation(); speak(opt.speak, bank.lang); });
+                div.appendChild(speakBtn);
+            }
+            div.addEventListener('click', function() {
+                if (showResult) return;
+                showResult = true;
+                if (idx === q.correct) {
+                    div.classList.add('correct');
+                    div.querySelector('.option-badge').style.background = '#FFFFFF';
+                    div.querySelector('.option-value').style.color = '#FFFFFF';
+                    reviewState.correctCount++;
+                    showToast('答对了！这个知识点掌握了！');
+                } else {
+                    div.classList.add('wrong');
+                    var correctOpt = answerGrid.querySelectorAll('.answer-option')[q.correct];
+                    if (correctOpt) {
+                        correctOpt.classList.add('correct');
+                        correctOpt.querySelector('.option-badge').style.background = '#FFFFFF';
+                        correctOpt.querySelector('.option-value').style.color = '#FFFFFF';
+                    }
+                    showToast('没关系，记住正确答案：' + q.options[q.correct].text);
+                }
+                setTimeout(function() {
+                    showResult = false;
+                    reviewState.currentIdx++;
+                    renderReviewQuestion();
+                }, 2000);
+            });
+            answerGrid.appendChild(div);
+        });
+
+        if (nextBtnText) nextBtnText.textContent = '下一题';
+        if (prevBtn) { prevBtn.style.opacity = '0.5'; prevBtn.style.pointerEvents = 'none'; }
+    }
+
     subjectCards.forEach(function(card) {
         card.addEventListener('click', function() { enterQuiz(card.dataset.subject); });
     });
+
+    // Review button handler
+    var reviewBtn = document.getElementById('reviewBtn');
+    if (reviewBtn) {
+        reviewBtn.addEventListener('click', function() { startReview(); });
+    }
 
     // ===== Navigation =====
     if (nextBtn) {
@@ -1588,6 +1876,16 @@
         updateCheckinUI();
         updateSubjectCards();
         animateProgressBars();
+        // Check for yesterday's wrong answers and show review banner
+        if (hasYesterdayWrong && hasYesterdayWrong()) {
+            var count = getYesterdayWrongCount ? getYesterdayWrongCount() : 0;
+            var banner = document.getElementById('reviewBanner');
+            if (banner) {
+                banner.style.display = 'flex';
+                var countEl = banner.querySelector('.review-banner-count');
+                if (countEl) countEl.textContent = count;
+            }
+        }
     }
 
     if (document.readyState !== 'loading') init();
