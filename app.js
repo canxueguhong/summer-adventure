@@ -14,6 +14,45 @@
     var CHILD_NAME = '王孟原';
     var SUBJECTS = ['pinyin', 'math', 'english', 'piano', 'chess', 'reading'];
     var QUESTIONS_PER_QUIZ = 10;
+    var DATA_VERSION = 'v2_farm';
+
+    // ===== Farm Data Definitions =====
+    var FARM_ANIMALS = [
+        { id: 'chicken', name: '小鸡', emoji: '🐔', unlockDay: 1, food: 'corn', foodName: '玉米' },
+        { id: 'rabbit', name: '小兔', emoji: '🐰', unlockDay: 3, food: 'carrot', foodName: '胡萝卜' },
+        { id: 'sheep', name: '小羊', emoji: '🐑', unlockDay: 7, food: 'grass', foodName: '青草' },
+        { id: 'cow', name: '奶牛', emoji: '🐮', unlockDay: 15, food: 'hay', foodName: '干草' },
+        { id: 'horse', name: '小马', emoji: '🐴', unlockDay: 21, food: 'apple', foodName: '苹果' },
+        { id: 'pig', name: '小猪', emoji: '🐷', unlockDay: 30, food: 'slop', foodName: '饲料' }
+    ];
+
+    var FARM_FOODS = [
+        { id: 'corn', name: '玉米', emoji: '🌽', subject: 'pinyin' },
+        { id: 'carrot', name: '胡萝卜', emoji: '🥕', subject: 'math' },
+        { id: 'apple', name: '苹果', emoji: '🍎', subject: 'english' },
+        { id: 'grass', name: '青草', emoji: '🌿', subject: 'piano' },
+        { id: 'hay', name: '干草', emoji: '🌾', subject: 'reading' },
+        { id: 'slop', name: '饲料', emoji: '🫘', subject: 'chess' }
+    ];
+
+    var FARM_TOOLS = [
+        { id: 'seeds', name: '种子', emoji: '🌱', unlockDay: 1 },
+        { id: 'watering_can', name: '水壶', emoji: '💧', unlockDay: 5 },
+        { id: 'axe', name: '斧头', emoji: '🪓', unlockDay: 10 },
+        { id: 'tractor', name: '拖拉机', emoji: '🚜', unlockDay: 21 },
+        { id: 'windmill', name: '风车', emoji: '🌬️', unlockDay: 45 },
+        { id: 'scarecrow', name: '稻草人', emoji: '🧑‍🌾', unlockDay: 60 }
+    ];
+
+    var MILESTONES = [
+        { days: 3, title: '坚持3天！', emoji: '🐰', desc: '解锁小兔，可以喂胡萝卜啦' },
+        { days: 7, title: '一周打卡！', emoji: '🐑', desc: '解锁小羊，可以喂青草啦' },
+        { days: 15, title: '半个月！', emoji: '🐮', desc: '解锁奶牛，可以喂干草啦' },
+        { days: 21, title: '21天习惯养成！', emoji: '🐴', desc: '解锁小马和拖拉机！' },
+        { days: 30, title: '满月打卡！', emoji: '🐷', desc: '解锁小猪，农场大升级！' },
+        { days: 45, title: '45天坚持！', emoji: '🌬️', desc: '解锁风车，自动种植！' },
+        { days: 60, title: '60天大师！', emoji: '🧑‍🌾', desc: '解锁稻草人，满级农场！' }
+    ];
 
     // ===== Daily Welcome Messages =====
     var welcomeMessages = [
@@ -318,6 +357,70 @@
         try { localStorage.setItem(getTodayKey(), JSON.stringify(progress)); } catch (e) {}
     }
 
+    // ===== Data Clear (version-based) =====
+    function clearOldDataIfNeeded() {
+        try {
+            var version = localStorage.getItem('wmy_data_version');
+            if (version !== DATA_VERSION) {
+                var keys = [];
+                for (var i = 0; i < localStorage.length; i++) {
+                    var k = localStorage.key(i);
+                    if (k && k.indexOf('wmy_') === 0) keys.push(k);
+                }
+                keys.forEach(function(k) { localStorage.removeItem(k); });
+                localStorage.setItem('wmy_data_version', DATA_VERSION);
+            }
+        } catch(e) {}
+    }
+
+    // ===== Farm State =====
+    function getFarmState() {
+        try {
+            var data = localStorage.getItem('wmy_farm');
+            if (data) return JSON.parse(data);
+        } catch(e) {}
+        return { animals: {}, food: {}, coins: 0, totalFed: 0 };
+    }
+
+    function saveFarmState(state) {
+        try { localStorage.setItem('wmy_farm', JSON.stringify(state)); } catch(e) {}
+    }
+
+    // ===== Check-in State =====
+    function getCheckinState() {
+        try {
+            var data = localStorage.getItem('wmy_checkin');
+            if (data) return JSON.parse(data);
+        } catch(e) {}
+        return { lastCheckIn: null, streak: 0, history: [], milestonesClaimed: [] };
+    }
+
+    function saveCheckinState(state) {
+        try { localStorage.setItem('wmy_checkin', JSON.stringify(state)); } catch(e) {}
+    }
+
+    function dateStr(d) {
+        if (!d) d = new Date();
+        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+
+    function isConsecutive(prevStr, currStr) {
+        if (!prevStr) return false;
+        var p = prevStr.split('-'), c = currStr.split('-');
+        var prev = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+        var curr = new Date(parseInt(c[0]), parseInt(c[1]) - 1, parseInt(c[2]));
+        var diff = (curr - prev) / 86400000;
+        return diff === 1;
+    }
+
+    function daysBetween(prevStr, currStr) {
+        if (!prevStr) return Infinity;
+        var p = prevStr.split('-'), c = currStr.split('-');
+        var prev = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+        var curr = new Date(parseInt(c[0]), parseInt(c[1]) - 1, parseInt(c[2]));
+        return (curr - prev) / 86400000;
+    }
+
     // ===== Random Question Selection =====
     function getDailyQuestions(subject) {
         var bank = questionBanks[subject];
@@ -366,7 +469,7 @@
         quiz: { id: 'screen-quiz', title: '每日练习 · 答题闯关' },
         tasks: { id: 'screen-map', title: '今日任务', scrollTarget: '.task-list' },
         errors: { id: 'screen-report', title: '错题巩固' },
-        achievements: { id: 'screen-map', title: '成就墙' }
+        farm: { id: 'screen-farm', title: '孟原的小农场' }
     };
 
     function switchScreen(target) {
@@ -386,6 +489,8 @@
             }, 200);
         }
         if (target === 'achievements') showToast('成就墙即将开放，敬请期待！');
+        if (target === 'farm') renderFarm();
+        if (target === 'map' || target === 'tasks') { updateMapStats(); updateSubjectCards(); }
     }
 
     sidebarItems.forEach(function(item) { item.addEventListener('click', function() { switchScreen(item.dataset.screen); }); });
@@ -655,16 +760,35 @@
         });
         saveDailyProgress(progress);
 
+        // Award farm food based on subject and correct answers
+        var foodItem = null;
+        for (var fi = 0; fi < FARM_FOODS.length; fi++) {
+            if (FARM_FOODS[fi].subject === currentSubject) {
+                foodItem = FARM_FOODS[fi];
+                break;
+            }
+        }
+        var foodEarned = correctCount;
+        var foodMsg = '';
+        if (foodItem && foodEarned > 0) {
+            var farmState = getFarmState();
+            if (!farmState.food[foodItem.id]) farmState.food[foodItem.id] = 0;
+            farmState.food[foodItem.id] += foodEarned;
+            saveFarmState(farmState);
+            foodMsg = ' 获得' + foodItem.emoji + foodItem.name + '×' + foodEarned + '！';
+        }
+
         // Show star collection animation
         showStarAnimation(currentSubject, correctCount, stars, function() {
             // After animation, check if all 6 subjects done today
             if (progress.completed.length >= 6) {
                 showCelebration(function() {
                     switchScreen('map');
+                    updateCheckinUI();
                 });
             } else {
-                showToast(CHILD_NAME + '已完成' + progress.completed.length + '/6个关卡，继续加油！');
-                setTimeout(function() { switchScreen('map'); }, 1500);
+                showToast(CHILD_NAME + '已完成' + progress.completed.length + '/6个关卡' + foodMsg + ' 继续加油！');
+                setTimeout(function() { switchScreen('map'); updateCheckinUI(); }, 1500);
             }
         });
     }
@@ -921,6 +1045,135 @@
                 heroSubtitle.textContent = '今天的6个关卡全部完成啦！太棒了！';
             }
         }
+        updateMapStats();
+        updateHeroProgress();
+    }
+
+    // ===== Update Map Stats =====
+    function updateMapStats() {
+        var progress = getDailyProgress();
+        var checkinState = getCheckinState();
+
+        // Calculate total stars today
+        var totalStars = progress.stars || 0;
+        var completedCount = progress.completed.length;
+
+        // Update stat cards
+        var statValues = document.querySelectorAll('.stat-card .stat-value');
+        if (statValues.length >= 4) {
+            statValues[0].textContent = totalStars;
+            statValues[1].textContent = completedCount + '关';
+
+            // Calculate accuracy
+            var totalCorrect = 0, totalAnswered = 0;
+            for (var subj in progress.subjects) {
+                totalCorrect += progress.subjects[subj].correct || 0;
+                totalAnswered += progress.subjects[subj].total || 0;
+            }
+            var accuracy = totalAnswered > 0 ? Math.round(totalCorrect / totalAnswered * 100) : 0;
+            statValues[2].textContent = accuracy + '%';
+            statValues[3].textContent = checkinState.streak + '天';
+        }
+
+        // Update hero star chip
+        var starChip = document.querySelector('.star-chip .chip-value');
+        if (starChip) starChip.textContent = totalStars;
+
+        // Update task list
+        updateTaskList(progress);
+    }
+
+    // ===== Update Hero Progress =====
+    function updateHeroProgress() {
+        var progress = getDailyProgress();
+        var done = progress.completed.length;
+        var heroProgress = document.querySelector('.hero-progress');
+        if (heroProgress) {
+            var fill = heroProgress.querySelector('.progress-fill');
+            var text = heroProgress.querySelector('.progress-text');
+            if (fill) fill.style.width = (done / 6 * 100) + '%';
+            if (text) text.textContent = done + '/6 完成';
+        }
+    }
+
+    // ===== Update Task List =====
+    function updateTaskList(progress) {
+        var taskList = document.querySelector('.task-list');
+        if (!taskList) return;
+
+        var subjectNames = {
+            pinyin: '拼音城堡', math: '数学森林', english: '英语星球',
+            piano: '钢琴音塔', chess: '象棋王国', reading: '阅读花园'
+        };
+        var subjectColors = {
+            pinyin: '#FF8C7A', math: '#6BB6E0', english: '#7BB661',
+            piano: '#B19CD9', chess: '#FFC857', reading: '#FF9F43'
+        };
+
+        taskList.innerHTML = '';
+        SUBJECTS.forEach(function(subj) {
+            var done = progress.completed.indexOf(subj) >= 0;
+            var item = document.createElement('div');
+            item.className = 'task-item ' + (done ? 'completed' : 'pending');
+            var subjData = progress.subjects[subj];
+            var rewardText = done && subjData
+                ? '+' + subjData.stars + '星 已完成'
+                : '+10星 待开始';
+            var rewardColor = done ? '#7BB661' : '#5C5147';
+
+            item.innerHTML =
+                '<div class="task-dot" style="background: ' + (done ? '#7BB661' : subjectColors[subj]) + ';"></div>' +
+                '<div class="task-content"><span class="task-name">' + subjectNames[subj] + ' · 每日10题练习</span></div>' +
+                '<div class="task-reward"><span style="color: ' + rewardColor + ';">' + rewardText + '</span></div>';
+
+            if (!done) {
+                item.addEventListener('click', function() { enterQuiz(subj); });
+            } else {
+                item.addEventListener('click', function() { enterQuiz(subj); });
+            }
+
+            taskList.appendChild(item);
+        });
+    }
+
+    // ===== Update Subject Cards =====
+    function updateSubjectCards() {
+        var progress = getDailyProgress();
+        var subjectCards = document.querySelectorAll('.subject-card');
+        var subjectLevels = {
+            pinyin: 'Lv.1 · 声母韵母学习',
+            math: 'Lv.1 · 10以内加减法',
+            english: 'Lv.1 · 字母发音',
+            piano: 'Lv.1 · 基础音名',
+            chess: 'Lv.1 · 棋子走法',
+            reading: 'Lv.1 · 基础识字'
+        };
+
+        subjectCards.forEach(function(card) {
+            var subj = card.dataset.subject;
+            var subjData = progress.subjects[subj];
+            var pct = 0;
+            var level = subjectLevels[subj] || 'Lv.1';
+
+            if (subjData) {
+                pct = Math.round((subjData.correct / subjData.total) * 100);
+                // Level up based on accuracy
+                var lv = 1;
+                if (pct >= 90) lv = 5;
+                else if (pct >= 80) lv = 4;
+                else if (pct >= 60) lv = 3;
+                else if (pct >= 40) lv = 2;
+                level = level.replace('Lv.1', 'Lv.' + lv);
+            }
+
+            var percentEl = card.querySelector('.card-percent');
+            var fillEl = card.querySelector('.card-progress .progress-fill');
+            var subtitleEl = card.querySelector('.card-subtitle');
+
+            if (percentEl) percentEl.textContent = pct + '%';
+            if (fillEl) fillEl.style.width = pct + '%';
+            if (subtitleEl) subtitleEl.textContent = level;
+        });
     }
 
     // ===== Prevent Double-Tap Zoom =====
@@ -931,9 +1184,409 @@
         lastTouchEnd = now;
     }, { passive: false });
 
+    // ===== Date Display =====
+    function setDateDisplay() {
+        var d = new Date();
+        var weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        var dateStr = (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + weekdays[d.getDay()];
+        var heroDate = document.getElementById('heroDate');
+        if (heroDate) heroDate.textContent = dateStr;
+    }
+
+    // ===== Check-in Logic =====
+    function updateCheckinUI() {
+        var progress = getDailyProgress();
+        var checkinState = getCheckinState();
+        var today = dateStr();
+
+        var checkinBtn = document.getElementById('checkinBtn');
+        var checkinStreak = document.getElementById('checkinStreak');
+        var checkinHint = document.getElementById('checkinHint');
+        var heroCheckinBadge = document.getElementById('heroCheckinBadge');
+        var streakChip = document.querySelector('.streak-chip .chip-value');
+        var statStreak = document.querySelectorAll('.stat-card .stat-value');
+
+        var hasCompletedTasks = progress.completed.length > 0;
+        var alreadyCheckedIn = checkinState.lastCheckIn === today;
+
+        if (checkinStreak) {
+            checkinStreak.textContent = '连续打卡 ' + checkinState.streak + ' 天';
+        }
+        if (streakChip) {
+            streakChip.textContent = checkinState.streak + '天连击';
+        }
+
+        // Update stats: 连续学习
+        if (statStreak.length >= 4) {
+            statStreak[3].textContent = checkinState.streak + '天';
+        }
+
+        if (checkinBtn) {
+            if (alreadyCheckedIn) {
+                checkinBtn.disabled = true;
+                checkinBtn.classList.add('checked');
+                checkinBtn.textContent = '今日已打卡';
+            } else if (hasCompletedTasks) {
+                checkinBtn.disabled = false;
+                checkinBtn.classList.remove('checked');
+                checkinBtn.textContent = '打卡 +1天';
+            } else {
+                checkinBtn.disabled = true;
+                checkinBtn.classList.remove('checked');
+                checkinBtn.textContent = '完成学习后打卡';
+            }
+        }
+
+        if (checkinHint) {
+            if (alreadyCheckedIn) {
+                checkinHint.textContent = '今天已打卡，明天继续加油！';
+            } else if (hasCompletedTasks) {
+                checkinHint.textContent = '点击打卡，领取农场奖励！';
+            } else {
+                checkinHint.textContent = '完成至少1个关卡即可打卡';
+            }
+        }
+
+        if (heroCheckinBadge) {
+            if (checkinState.streak > 0) {
+                heroCheckinBadge.textContent = '打卡 ' + checkinState.streak + ' 天';
+                heroCheckinBadge.classList.add('show');
+            }
+        }
+    }
+
+    function doCheckin() {
+        var checkinState = getCheckinState();
+        var today = dateStr();
+
+        if (checkinState.lastCheckIn === today) {
+            showToast('今天已经打卡啦！');
+            return;
+        }
+
+        var prevStreak = checkinState.streak;
+        if (isConsecutive(checkinState.lastCheckIn, today)) {
+            checkinState.streak = prevStreak + 1;
+        } else {
+            checkinState.streak = 1;
+        }
+
+        checkinState.lastCheckIn = today;
+        checkinState.history.push(today);
+        if (checkinState.history.length > 90) checkinState.history = checkinState.history.slice(-90);
+
+        // Check for milestone unlocks
+        var newMilestones = [];
+        if (!checkinState.milestonesClaimed) checkinState.milestonesClaimed = [];
+        for (var i = 0; i < MILESTONES.length; i++) {
+            var m = MILESTONES[i];
+            if (checkinState.streak >= m.days && checkinState.milestonesClaimed.indexOf(m.days) < 0) {
+                newMilestones.push(m);
+                checkinState.milestonesClaimed.push(m.days);
+            }
+        }
+
+        // Bonus food for checking in
+        var farmState = getFarmState();
+        var bonusItems = ['corn', 'carrot', 'apple', 'grass', 'hay', 'slop'];
+        var bonusFood = bonusItems[Math.floor(Math.random() * bonusItems.length)];
+        if (!farmState.food[bonusFood]) farmState.food[bonusFood] = 0;
+        farmState.food[bonusFood] += 2;
+        farmState.coins += 5;
+        saveFarmState(farmState);
+
+        saveCheckinState(checkinState);
+
+        // Show milestone celebration or check-in success
+        if (newMilestones.length > 0) {
+            showMilestoneCelebration(newMilestones[0], function() {
+                if (newMilestones.length > 1) {
+                    showMilestoneCelebration(newMilestones[1], function() {
+                        updateCheckinUI();
+                        renderFarm();
+                    });
+                } else {
+                    updateCheckinUI();
+                    renderFarm();
+                }
+            });
+        } else {
+            var foodEmoji = '';
+            for (var f = 0; f < FARM_FOODS.length; f++) {
+                if (FARM_FOODS[f].id === bonusFood) { foodEmoji = FARM_FOODS[f].emoji; break; }
+            }
+            showToast('打卡成功！连续' + checkinState.streak + '天！获得' + foodEmoji + '×2 + 5农场币');
+            updateCheckinUI();
+            renderFarm();
+        }
+    }
+
+    // ===== Milestone Celebration =====
+    function showMilestoneCelebration(milestone, callback) {
+        var overlay = document.createElement('div');
+        overlay.className = 'milestone-overlay';
+
+        var confettiHtml = '';
+        var colors = ['#FFC857', '#FF8C7A', '#6BB6E0', '#7BB661', '#B19CD9', '#FF9F43'];
+        for (var i = 0; i < 40; i++) {
+            var left = Math.random() * 100;
+            var delay = Math.random() * 1.5;
+            var duration = 2 + Math.random() * 2;
+            var color = colors[i % colors.length];
+            var size = 8 + Math.random() * 8;
+            confettiHtml += '<div class="confetti" style="left:' + left + '%;animation-delay:' + delay + 's;animation-duration:' + duration + 's;background:' + color + ';width:' + size + 'px;height:' + (size * 1.5) + 'px;transform:rotate(' + (Math.random() * 360) + 'deg);"></div>';
+        }
+
+        overlay.innerHTML =
+            '<div class="celebration-confetti">' + confettiHtml + '</div>' +
+            '<div class="milestone-anim-card">' +
+                '<div class="milestone-anim-emoji">' + milestone.emoji + '</div>' +
+                '<h2 class="milestone-anim-title">' + milestone.title + '</h2>' +
+                '<p class="milestone-anim-desc">' + milestone.desc + '</p>' +
+                '<div class="milestone-anim-reward">' +
+                    '<span>🎉 新奖励已解锁！</span>' +
+                '</div>' +
+                '<br>' +
+                '<button class="milestone-anim-btn">太棒了！</button>' +
+            '</div>';
+
+        document.body.appendChild(overlay);
+        requestAnimationFrame(function() { overlay.classList.add('show'); });
+
+        var btn = overlay.querySelector('.milestone-anim-btn');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                overlay.classList.remove('show');
+                setTimeout(function() {
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    if (callback) callback();
+                }, 400);
+            });
+        }
+
+        setTimeout(function() {
+            if (overlay.parentNode) {
+                overlay.classList.remove('show');
+                setTimeout(function() {
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    if (callback) callback();
+                }, 400);
+            }
+        }, 6000);
+    }
+
+    // ===== Farm Rendering =====
+    function renderFarm() {
+        var checkinState = getCheckinState();
+        var farmState = getFarmState();
+        var streak = checkinState.streak;
+
+        // Update header
+        var farmLevel = document.getElementById('farmLevel');
+        var farmStreakDisplay = document.getElementById('farmStreakDisplay');
+        var farmCoinCount = document.getElementById('farmCoinCount');
+
+        var levelName = '新手农夫';
+        if (streak >= 60) levelName = '农场大师';
+        else if (streak >= 45) levelName = '资深农夫';
+        else if (streak >= 30) levelName = '高级农夫';
+        else if (streak >= 21) levelName = '熟练农夫';
+        else if (streak >= 15) levelName = '中级农夫';
+        else if (streak >= 7) levelName = '初级农夫';
+        var levelNum = Math.min(Math.floor(streak / 5) + 1, 13);
+
+        if (farmLevel) farmLevel.textContent = 'Lv.' + levelNum + ' ' + levelName;
+        if (farmStreakDisplay) farmStreakDisplay.textContent = '打卡 ' + streak + ' 天';
+        if (farmCoinCount) farmCoinCount.textContent = farmState.coins || 0;
+
+        // Render farm scene animals
+        var sceneAnimals = document.getElementById('farmAnimals');
+        if (sceneAnimals) {
+            sceneAnimals.innerHTML = '';
+            FARM_ANIMALS.forEach(function(a) {
+                var div = document.createElement('div');
+                div.className = 'scene-animal';
+                if (streak < a.unlockDay) {
+                    div.classList.add('locked');
+                }
+                div.textContent = a.emoji;
+                div.dataset.animalId = a.id;
+                sceneAnimals.appendChild(div);
+            });
+        }
+
+        // Render food inventory
+        var foodInv = document.getElementById('foodInventory');
+        if (foodInv) {
+            foodInv.innerHTML = '';
+            FARM_FOODS.forEach(function(f) {
+                var count = farmState.food[f.id] || 0;
+                var div = document.createElement('div');
+                div.className = 'food-item' + (count === 0 ? ' empty' : '');
+                div.innerHTML =
+                    '<span class="food-emoji">' + f.emoji + '</span>' +
+                    '<span class="food-count">×' + count + '</span>' +
+                    '<span class="food-name">' + f.name + '</span>';
+                foodInv.appendChild(div);
+            });
+        }
+
+        // Render animal grid
+        var animalGrid = document.getElementById('animalGrid');
+        if (animalGrid) {
+            animalGrid.innerHTML = '';
+            FARM_ANIMALS.forEach(function(a) {
+                var div = document.createElement('div');
+                div.className = 'animal-card';
+                var locked = streak < a.unlockDay;
+                if (locked) div.classList.add('locked');
+                var fed = farmState.animals[a.id] && farmState.animals[a.id].lastFed === dateStr();
+                if (fed) div.classList.add('fed');
+
+                var hungerPct = fed ? 100 : (locked ? 0 : 100);
+                var statusText = locked ? ('打卡' + a.unlockDay + '天解锁') : (fed ? '已喂食 ✓' : '饿了，需要喂食');
+
+                div.innerHTML =
+                    '<div class="animal-emoji">' + a.emoji + '</div>' +
+                    '<div class="animal-name">' + a.name + '</div>' +
+                    '<div class="animal-status">' + statusText + '</div>' +
+                    '<div class="animal-hunger-bar"><div class="animal-hunger-fill" style="width:' + hungerPct + '%"></div></div>' +
+                    (locked ? '<div class="animal-lock-info">需要食物: ' + a.foodName + '</div>' : '<div class="animal-lock-info">需要' + a.foodName + '</div>');
+
+                if (!locked && !fed) {
+                    div.addEventListener('click', function() { tryFeedAnimal(a, div); });
+                }
+
+                animalGrid.appendChild(div);
+            });
+        }
+
+        // Render tools
+        var toolGrid = document.getElementById('toolGrid');
+        if (toolGrid) {
+            toolGrid.innerHTML = '';
+            FARM_TOOLS.forEach(function(t) {
+                var div = document.createElement('div');
+                div.className = 'tool-card';
+                var locked = streak < t.unlockDay;
+                if (locked) div.classList.add('locked');
+                if (!locked) div.classList.add('unlocked');
+
+                div.innerHTML =
+                    '<div class="tool-emoji">' + t.emoji + '</div>' +
+                    '<div class="tool-name">' + t.name + '</div>' +
+                    '<div class="tool-status">' + (locked ? '打卡' + t.unlockDay + '天' : '已解锁') + '</div>';
+
+                toolGrid.appendChild(div);
+            });
+        }
+
+        // Render milestones
+        var milestoneTrack = document.getElementById('milestoneTrack');
+        if (milestoneTrack) {
+            milestoneTrack.innerHTML = '';
+            MILESTONES.forEach(function(m) {
+                var div = document.createElement('div');
+                div.className = 'milestone-card';
+                var unlocked = streak >= m.days;
+                var isNext = !unlocked && MILESTONES.indexOf(m) > 0 && streak >= MILESTONES[MILESTONES.indexOf(m) - 1].days;
+                if (MILESTONES.indexOf(m) === 0 && !unlocked) isNext = true;
+                if (unlocked) div.classList.add('unlocked');
+                if (isNext) div.classList.add('current');
+
+                div.innerHTML =
+                    '<div class="milestone-check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+                    '<div class="milestone-days">' + m.days + '天</div>' +
+                    '<div class="milestone-reward">' + m.emoji + '</div>' +
+                    '<div class="milestone-desc">' + m.desc + '</div>';
+
+                milestoneTrack.appendChild(div);
+            });
+        }
+    }
+
+    // ===== Feed Animal =====
+    function tryFeedAnimal(animal, cardEl) {
+        var farmState = getFarmState();
+        var foodCount = farmState.food[animal.food] || 0;
+
+        if (foodCount <= 0) {
+            // Find the food name
+            var foodName = animal.foodName;
+            showToast('没有' + foodName + '了！完成练习获取食物吧！');
+            return;
+        }
+
+        // Consume food
+        farmState.food[animal.food] = foodCount - 1;
+
+        // Mark animal as fed
+        if (!farmState.animals[animal.id]) farmState.animals[animal.id] = {};
+        farmState.animals[animal.id].lastFed = dateStr();
+        farmState.totalFed = (farmState.totalFed || 0) + 1;
+        farmState.coins = (farmState.coins || 0) + 1;
+        saveFarmState(farmState);
+
+        // Visual feedback
+        cardEl.classList.add('fed');
+        var statusEl = cardEl.querySelector('.animal-status');
+        if (statusEl) statusEl.textContent = '已喂食 ✓';
+        var fillEl = cardEl.querySelector('.animal-hunger-fill');
+        if (fillEl) fillEl.style.width = '100%';
+
+        // Scene animal happy animation
+        var sceneAnimals = document.querySelectorAll('.scene-animal');
+        sceneAnimals.forEach(function(sa) {
+            if (sa.dataset.animalId === animal.id) {
+                sa.classList.add('happy');
+                setTimeout(function() { sa.classList.remove('happy'); }, 600);
+
+                // Heart particles
+                for (var h = 0; h < 3; h++) {
+                    var heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.textContent = '❤️';
+                    heart.style.left = (20 + h * 15) + 'px';
+                    heart.style.top = '-10px';
+                    heart.style.animationDelay = (h * 0.15) + 's';
+                    sa.appendChild(heart);
+                    setTimeout(function(el) { if (el.parentNode) el.parentNode.removeChild(el); }, 1000 + h * 150);
+                }
+            }
+        });
+
+        // Update food inventory
+        var foodItems = document.querySelectorAll('.food-item');
+        FARM_FOODS.forEach(function(f, idx) {
+            if (f.id === animal.food && foodItems[idx]) {
+                var count = farmState.food[f.id] || 0;
+                foodItems[idx].querySelector('.food-count').textContent = '×' + count;
+                foodItems[idx].classList.toggle('empty', count === 0);
+            }
+        });
+
+        // Update coins
+        var coinEl = document.getElementById('farmCoinCount');
+        if (coinEl) coinEl.textContent = farmState.coins;
+
+        showToast(animal.emoji + animal.name + '吃饱啦！+1农场币');
+    }
+
+    // ===== Farm & Checkin Event Listeners =====
+    var checkinBtn = document.getElementById('checkinBtn');
+    if (checkinBtn) {
+        checkinBtn.addEventListener('click', function() {
+            if (!checkinBtn.disabled) doCheckin();
+        });
+    }
+
     // ===== Init =====
     function init() {
+        clearOldDataIfNeeded();
         setDailyWelcome();
+        setDateDisplay();
+        updateCheckinUI();
+        updateSubjectCards();
         animateProgressBars();
     }
 
