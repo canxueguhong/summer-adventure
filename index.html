@@ -129,6 +129,20 @@
                         <button class="checkin-btn" id="checkinBtn" disabled>打卡</button>
                     </div>
 
+                    <!-- Review Banner (shown if yesterday has wrong answers) -->
+                    <div class="review-banner" id="reviewBanner" style="display:none">
+                        <div class="review-banner-left">
+                            <div class="review-banner-icon">
+                                <svg viewBox="0 0 48 48" fill="none"><path d="M24 6L28 18L40 19L31 27L34 39L24 33L14 39L17 27L8 19L20 18L24 6Z" fill="#FF8C7A" stroke="#E57060" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                            </div>
+                            <div class="review-banner-info">
+                                <span class="review-banner-title">昨天有 <span class="review-banner-count">0</span> 道错题</span>
+                                <span class="review-banner-hint">先复习错题再开始今天的练习吧！</span>
+                            </div>
+                        </div>
+                        <button class="review-banner-btn" id="reviewBtn">开始复习</button>
+                    </div>
+
                     <!-- Section Title -->
                     <div class="section-header">
                         <h2>学科关卡</h2>
@@ -500,6 +514,16 @@
                     </div>
                 </section>
 
+                <!-- Screen: Piano Practice -->
+                <section class="screen screen-piano" id="screen-piano">
+                    <div class="piano-practice" id="pianoContainer"></div>
+                </section>
+
+                <!-- Screen: Chess Training -->
+                <section class="screen screen-chess" id="screen-chess">
+                    <div class="chess-training" id="chessContainer"></div>
+                </section>
+
                 <!-- Screen 3: Daily Practice Quiz -->
                 <section class="screen screen-quiz" id="screen-quiz">
                     <div class="quiz-layout">
@@ -560,6 +584,8 @@
         </div>
     </div>
 
+    <script src="piano-module.js"></script>
+    <script src="chess-module.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
