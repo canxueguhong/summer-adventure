@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FFFAF0">
+    <title>暑假幼小衔接通关大冒险</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" fill="#FFC857" stroke="#E5AB30" stroke-width="2"/>
+                        <path d="M24 10L28 22L40 24L28 26L24 38L20 26L8 24L20 22L24 10Z" fill="#FF8C7A" stroke="#E57060" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="24" cy="24" r="3" fill="#FFFFFF"/>
+                    </svg>
+                </div>
+                <span class="app-title" id="pageTitle">暑假冒险大地图</span>
+            </div>
+            <div class="top-bar-right">
+                <div class="stat-chip star-chip">
+                    <svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9.3L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.3L9.5 8.5L12 2Z" fill="#FFC857" stroke="#E5AB30" stroke-width="1"/></svg>
+                    <span class="chip-value">128</span>
+                </div>
+                <div class="stat-chip streak-chip">
+                    <svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 7 6 7 12C7 15 9 17 12 17C15 17 17 15 17 12C17 9 15 8 15 6C15 4 13 3 13 2H12Z" fill="#FF8C7A" stroke="#E57060" stroke-width="1"/><path d="M12 17V22" stroke="#E57060" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span class="chip-value">7天连击</span>
+                </div>
+                <div class="avatar">
+                    <span>小</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="bottom-nav-item active" data-screen="map">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M9 4L3 6V20L9 18L15 20L21 18V4L15 6L9 4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 4V18M15 6V20" stroke="currentColor" stroke-width="2"/></svg>
+                <span>冒险地图</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="report">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19H20M8 15V9M12 15V7M16 15V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>能力报告</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="tasks">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M9 11L12 14L20 6M4 12C4 7 8 4 12 4C16 4 20 7 20 12C20 17 16 20 12 20C8 20 4 17 4 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>今日任务</span>
+            </button>
+            <button class="bottom-nav-item" data-screen="achievements">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9.3L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                <span>成就墙</span>
+            </button>
+        </nav>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <button class="nav-item active" data-screen="map">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 4L3 6V20L9 18L15 20L21 18V4L15 6L9 4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 4V18M15 6V20" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>冒险地图</span>
+                </button>
+                <button class="nav-item" data-screen="tasks">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 11L12 14L20 6M4 12C4 7 8 4 12 4C16 4 20 7 20 12C20 17 16 20 12 20C8 20 4 17 4 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>今日任务</span>
+                </button>
+                <button class="nav-item" data-screen="errors">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 9V13M12 17H12.01M5 21H19C20.1 21 21 20.1 21 19V9C21 7.9 20.1 7 19 7H14L12 4H8L6 7H5C3.9 7 3 7.9 3 9V19C3 20.1 3.9 21 5 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>错题巩固</span>
+                </button>
+                <button class="nav-item" data-screen="report">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19H20M8 15V9M12 15V7M16 15V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>能力报告</span>
+                </button>
+                <button class="nav-item" data-screen="achievements">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9.3L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                    <span>成就墙</span>
+                </button>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Screen 1: Adventure Map -->
+                <section class="screen screen-map active" id="screen-map">
+                    <!-- Hero Banner -->
+                    <div class="hero-banner">
+                        <div class="hero-text">
+                            <h1 class="hero-title">欢迎回来，小冒险家！</h1>
+                            <p class="hero-subtitle">今天还有3个冒险任务等你完成</p>
+                            <div class="hero-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 67%"></div>
+                                </div>
+                                <span class="progress-text">2/3 完成</span>
+                            </div>
+                        </div>
+                        <div class="hero-decoration">
+                            <svg viewBox="0 0 120 120" fill="none">
+                                <path d="M60 10L70 45L105 50L78 72L88 105L60 88L32 105L42 72L15 50L50 45L60 10Z" fill="#FFFFFF" fill-opacity="0.3" stroke="#FFFFFF" stroke-width="2"/>
+                                <circle cx="60" cy="60" r="8" fill="#FFFFFF" fill-opacity="0.5"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Section Title -->
+                    <div class="section-header">
+                        <h2>学科关卡</h2>
+                        <span class="section-badge">6个领域</span>
+                    </div>
+
+                    <!-- Subject Cards Grid -->
+                    <div class="subject-grid">
+                        <div class="subject-card" data-subject="pinyin" data-color="#FF8C7A" data-bg="#FFF0EE">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #FF8C7A;">
+                                    <svg viewBox="0 0 48 48" fill="none"><path d="M12 28V18L18 12H30L36 18V28L30 34H18L12 28Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><path d="M18 34V40M30 34V40M24 12V6" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/><rect x="20" y="20" width="8" height="8" fill="#FFFFFF"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">拼音城堡</h3>
+                                    <span class="card-percent" style="color: #FF8C7A;">85%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 85%; background: #FF8C7A;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.8 · 声母韵母学习</p>
+                        </div>
+
+                        <div class="subject-card" data-subject="math" data-color="#6BB6E0" data-bg="#E8F4FB">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #6BB6E0;">
+                                    <svg viewBox="0 0 48 48" fill="none"><path d="M24 8L8 38H40L24 8Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><circle cx="24" cy="28" r="4" fill="#FFFFFF"/><path d="M24 20V24" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">数学森林</h3>
+                                    <span class="card-percent" style="color: #6BB6E0;">60%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 60%; background: #6BB6E0;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.6 · 20以内加减法</p>
+                        </div>
+
+                        <div class="subject-card" data-subject="english" data-color="#7BB661" data-bg="#EDF5E6">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #7BB661;">
+                                    <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" stroke="#FFFFFF" stroke-width="2.5"/><path d="M8 24H40M24 8C28 12 30 18 30 24C30 30 28 36 24 40C20 36 18 30 18 24C18 18 20 12 24 8Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">英语星球</h3>
+                                    <span class="card-percent" style="color: #7BB661;">40%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 40%; background: #7BB661;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.4 · CVC单词拼读</p>
+                        </div>
+
+                        <div class="subject-card" data-subject="piano" data-color="#B19CD9" data-bg="#F0EBF8">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #B19CD9;">
+                                    <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="14" width="32" height="24" rx="3" stroke="#FFFFFF" stroke-width="2.5"/><path d="M16 14V30M24 14V30M32 14V30" stroke="#FFFFFF" stroke-width="2"/><path d="M14 30V38M20 30V38M28 30V38M34 30V38" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">钢琴音塔</h3>
+                                    <span class="card-percent" style="color: #B19CD9;">30%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 30%; background: #B19CD9;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.3 · 基础指法练习</p>
+                        </div>
+
+                        <div class="subject-card" data-subject="chess" data-color="#FFC857" data-bg="#FFF8E0">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #FFC857;">
+                                    <svg viewBox="0 0 48 48" fill="none"><path d="M24 6L30 14L28 22H20L18 14L24 6Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><rect x="16" y="22" width="16" height="6" rx="2" stroke="#FFFFFF" stroke-width="2"/><path d="M12 28L10 38H38L36 28" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 38V42M34 38V42" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">象棋王国</h3>
+                                    <span class="card-percent" style="color: #FFC857;">20%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 20%; background: #FFC857;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.2 · 棋子走法入门</p>
+                        </div>
+
+                        <div class="subject-card" data-subject="reading" data-color="#FF9F43" data-bg="#FFF3E6">
+                            <div class="card-top">
+                                <div class="card-icon" style="background: #FF9F43;">
+                                    <svg viewBox="0 0 48 48" fill="none"><path d="M24 10C20 6 12 6 8 10V36C12 32 20 32 24 36C28 32 36 32 40 36V10C36 6 28 6 24 10Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 10V36" stroke="#FFFFFF" stroke-width="2"/></svg>
+                                </div>
+                                <div class="card-title-row">
+                                    <h3 class="card-title">阅读花园</h3>
+                                    <span class="card-percent" style="color: #FF9F43;">50%</span>
+                                </div>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar sm">
+                                    <div class="progress-fill" style="width: 50%; background: #FF9F43;"></div>
+                                </div>
+                            </div>
+                            <p class="card-subtitle">Lv.5 · 绘本自主阅读</p>
+                        </div>
+                    </div>
+
+                    <!-- Today's Tasks -->
+                    <div class="section-header">
+                        <h2>今日冒险任务</h2>
+                        <span class="section-link">查看全部</span>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item completed">
+                            <div class="task-dot" style="background: #7BB661;"></div>
+                            <div class="task-content">
+                                <span class="task-name">拼音城堡 · 声母复习跟读</span>
+                            </div>
+                            <div class="task-reward">
+                                <span style="color: #7BB661;">+5星 已完成</span>
+                            </div>
+                        </div>
+                        <div class="task-item in-progress">
+                            <div class="task-dot" style="background: #FFC857;"></div>
+                            <div class="task-content">
+                                <span class="task-name">数学森林 · 20以内加法练习</span>
+                            </div>
+                            <div class="task-reward">
+                                <span style="color: #FFC857;">+8星 进行中</span>
+                            </div>
+                        </div>
+                        <div class="task-item pending">
+                            <div class="task-dot" style="background: #E0D8CC;"></div>
+                            <div class="task-content">
+                                <span class="task-name">英语星球 · CVC单词拼读挑战</span>
+                            </div>
+                            <div class="task-reward">
+                                <span style="color: #5C5147;">+10星 待开始</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="section-header">
+                        <h2>冒险统计</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-value" style="color: #FFC857;">128</span>
+                            <span class="stat-label">总星星</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" style="color: #6BB6E0;">28</span>
+                            <span class="stat-label">已通关数</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" style="color: #7BB661;">87%</span>
+                            <span class="stat-label">答题正确率</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" style="color: #FF8C7A;">7天</span>
+                            <span class="stat-label">连续学习</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Screen 2: Ability Report -->
+                <section class="screen screen-report" id="screen-report">
+                    <div class="report-layout">
+                        <!-- Left Column -->
+                        <div class="report-left">
+                            <div class="card radar-card">
+                                <h3 class="card-title-main">小冒险家的能力地图</h3>
+                                <p class="card-subtitle-main">点查看各学科详情 →</p>
+                                <div class="radar-chart-container">
+                                    <svg viewBox="0 0 400 400" class="radar-svg" xmlns="http://www.w3.org/2000/svg">
+                                        <polygon points="200,50 329.9,125 329.9,275 200,350 70.1,275 70.1,125" stroke="#E5D198" stroke-width="1.5" fill="none"/>
+                                        <polygon points="200,100 286.6,150 286.6,250 200,300 113.4,250 113.4,150" stroke="#EDE3C8" stroke-width="1" fill="none"/>
+                                        <polygon points="200,150 243.3,175 243.3,225 200,250 156.7,225 156.7,175" stroke="#F0E8D0" stroke-width="1" fill="none"/>
+                                        <line x1="200" y1="200" x2="200" y2="50" stroke="#E5D198" stroke-width="1"/>
+                                        <line x1="200" y1="200" x2="329.9" y2="125" stroke="#E5D198" stroke-width="1"/>
+                                        <line x1="200" y1="200" x2="329.9" y2="275" stroke="#E5D198" stroke-width="1"/>
+                                        <line x1="200" y1="200" x2="200" y2="350" stroke="#E5D198" stroke-width="1"/>
+                                        <line x1="200" y1="200" x2="70.1" y2="275" stroke="#E5D198" stroke-width="1"/>
+                                        <line x1="200" y1="200" x2="70.1" y2="125" stroke="#E5D198" stroke-width="1"/>
+                                        <polygon points="200,72.5 277.9,155 251.9,230 200,245 174,215 135.1,162.5" fill="#FF8C7A" fill-opacity="0.25" stroke="#FF8C7A" stroke-width="2.5" stroke-linejoin="round"/>
+                                        <circle cx="200" cy="72.5" r="6" fill="#FF8C7A" stroke="#FFFFFF" stroke-width="2"/>
+                                        <circle cx="277.9" cy="155" r="6" fill="#6BB6E0" stroke="#FFFFFF" stroke-width="2"/>
+                                        <circle cx="251.9" cy="230" r="6" fill="#7BB661" stroke="#FFFFFF" stroke-width="2"/>
+                                        <circle cx="200" cy="245" r="6" fill="#B19CD9" stroke="#FFFFFF" stroke-width="2"/>
+                                        <circle cx="174" cy="215" r="6" fill="#FFC857" stroke="#FFFFFF" stroke-width="2"/>
+                                        <circle cx="135.1" cy="162.5" r="6" fill="#FF9F43" stroke="#FFFFFF" stroke-width="2"/>
+                                        <text x="200" y="35" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">拼音 85</text>
+                                        <text x="352" y="120" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">数学 60</text>
+                                        <text x="352" y="285" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">英语 40</text>
+                                        <text x="200" y="375" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">钢琴 30</text>
+                                        <text x="45" y="285" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">象棋 20</text>
+                                        <text x="45" y="120" font-size="14" font-weight="700" fill="#2D2A26" text-anchor="middle">阅读 50</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="card summary-card">
+                                <h3 class="card-title-main">能力评估总结</h3>
+                                <p class="summary-text">综合能力：良好。拼音和阅读表现突出，象棋和钢琴需要加强练习。</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="report-right">
+                            <div class="card error-card">
+                                <h3 class="card-title-main">易错题统计</h3>
+                                <p class="card-subtitle-main">根据近期错题智能推荐复习重点</p>
+                                <div class="error-list">
+                                    <div class="error-item" style="background: #FFF0EE;">
+                                        <div class="error-info">
+                                            <span class="error-dot" style="background: #FF8C7A;"></span>
+                                            <span class="error-name">数学 · 退位减法 8题</span>
+                                        </div>
+                                        <span class="error-badge" style="color: #FF8C7A;">需重点复习</span>
+                                    </div>
+                                    <div class="error-item" style="background: #EDF5E6;">
+                                        <div class="error-info">
+                                            <span class="error-dot" style="background: #7BB661;"></span>
+                                            <span class="error-name">英语 · 短元音拼读 5题</span>
+                                        </div>
+                                        <span class="error-badge" style="color: #7BB661;">需加练习</span>
+                                    </div>
+                                    <div class="error-item" style="background: #F0EBF8;">
+                                        <div class="error-info">
+                                            <span class="error-dot" style="background: #B19CD9;"></span>
+                                            <span class="error-name">象棋 · 棋子走法 3题</span>
+                                        </div>
+                                        <span class="error-badge" style="color: #B19CD9;">进阶挑战</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card rec-card">
+                                <h3 class="card-title-main">智能推荐练习</h3>
+                                <div class="rec-list">
+                                    <div class="rec-item" style="background: #FFF8E0;">
+                                        <span class="rec-dot" style="background: #FFC857;"></span>
+                                        <span class="rec-text">今日优先：数学退位减法复习</span>
+                                    </div>
+                                    <div class="rec-item" style="background: #E8F4FB;">
+                                        <span class="rec-dot" style="background: #6BB6E0;"></span>
+                                        <span class="rec-text">明日挑战：英语短元音拼读</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card subject-detail-card">
+                                <h3 class="card-title-main">各科能力详情</h3>
+                                <div class="ability-list">
+                                    <div class="ability-item">
+                                        <span class="ability-label">拼音城堡 · 85%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 85%; background: #FF8C7A;"></div></div>
+                                    </div>
+                                    <div class="ability-item">
+                                        <span class="ability-label">数学森林 · 60%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 60%; background: #6BB6E0;"></div></div>
+                                    </div>
+                                    <div class="ability-item">
+                                        <span class="ability-label">英语星球 · 40%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 40%; background: #7BB661;"></div></div>
+                                    </div>
+                                    <div class="ability-item">
+                                        <span class="ability-label">钢琴音塔 · 30%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 30%; background: #B19CD9;"></div></div>
+                                    </div>
+                                    <div class="ability-item">
+                                        <span class="ability-label">象棋王国 · 20%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 20%; background: #FFC857;"></div></div>
+                                    </div>
+                                    <div class="ability-item">
+                                        <span class="ability-label">阅读花园 · 50%</span>
+                                        <div class="ability-bar"><div class="ability-fill" style="width: 50%; background: #FF9F43;"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Screen 3: Daily Practice Quiz -->
+                <section class="screen screen-quiz" id="screen-quiz">
+                    <div class="quiz-layout">
+                        <!-- Progress Track (dynamic) -->
+                        <div class="progress-track-container" id="progressTrackContainer"></div>
+
+                        <!-- Question Card -->
+                        <div class="question-card" id="questionCard">
+                            <div class="question-header">
+                                <div class="question-meta">
+                                    <span class="question-badge" id="questionBadge">第1题</span>
+                                    <div class="difficulty-stars" id="difficultyStars"></div>
+                                </div>
+                                <div class="question-header-right">
+                                    <button class="speak-question-btn" id="speakQuestionBtn" style="display:none">
+                                        <svg viewBox="0 0 24 24" fill="none"><path d="M4 9V15H8L13 19V5L8 9H4Z" fill="currentColor"/><path d="M16 8C17.5 9 18 10.5 18 12C18 13.5 17.5 15 16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M19 5C21 7 22 9.5 22 12C22 14.5 21 17 19 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+                                        <span>听一听</span>
+                                    </button>
+                                    <div class="streak-badge">
+                                        <svg viewBox="0 0 20 24" fill="none"><path d="M10 2C10 2 5 7 5 13C5 17 7 20 10 20C13 20 15 17 15 13C15 10 13 9 13 7C13 5 11 4 11 2H10Z" fill="#FF8C7A"/><path d="M10 20V23" stroke="#FF8C7A" stroke-width="2" stroke-linecap="round"/></svg>
+                                        <span id="streakText">连对0题</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mascot-row">
+                                <div class="mascot-icon">
+                                    <svg viewBox="0 0 64 64" fill="none"><circle cx="16" cy="16" r="8" fill="#FFC857"/><circle cx="48" cy="16" r="8" fill="#FFC857"/><circle cx="32" cy="34" r="24" fill="#FFC857"/><circle cx="24" cy="30" r="3" fill="#2D2A26"/><circle cx="40" cy="30" r="3" fill="#2D2A26"/><path d="M24 40C27 44 30 46 32 46C34 46 37 44 40 40" stroke="#2D2A26" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="18" cy="38" r="3" fill="#FF8C7A" fill-opacity="0.5"/><circle cx="46" cy="38" r="3" fill="#FF8C7A" fill-opacity="0.5"/></svg>
+                                </div>
+                                <span class="mascot-text" id="mascotText">加油，你一定能行！</span>
+                            </div>
+
+                            <div class="question-content" id="questionContent"></div>
+
+                            <div class="answer-grid" id="answerGrid"></div>
+                        </div>
+
+                        <!-- Bottom Actions -->
+                        <div class="quiz-actions">
+                            <button class="hint-btn" id="hintBtn">
+                                <svg viewBox="0 0 22 22" fill="none"><path d="M8 16H14M9 19H13M11 2C7 2 4 5 4 9C4 12 6 14 8 15H14C16 14 18 12 18 9C18 5 15 2 11 2Z" stroke="#FFC857" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+                                <span>提示</span>
+                            </button>
+                            <div class="quiz-nav">
+                                <button class="prev-btn" id="prevBtn">
+                                    <svg viewBox="0 0 20 20" fill="none"><path d="M13 4L7 10L13 16" stroke="#5C5147" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span>上一题</span>
+                                </button>
+                                <button class="next-btn" id="nextBtn">
+                                    <span id="nextBtnText">下一题</span>
+                                    <svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
