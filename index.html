@@ -55,9 +55,9 @@
                 <svg viewBox="0 0 24 24" fill="none"><path d="M9 11L12 14L20 6M4 12C4 7 8 4 12 4C16 4 20 7 20 12C20 17 16 20 12 20C8 20 4 17 4 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span>今日任务</span>
             </button>
-            <button class="bottom-nav-item" data-screen="achievements">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9.3L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-                <span>成就墙</span>
+            <button class="bottom-nav-item" data-screen="farm">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 21V12L12 4L21 12V21H14V15H10V21H3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 14H9M15 14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>我的农场</span>
             </button>
         </nav>
 
@@ -81,9 +81,9 @@
                     <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19H20M8 15V9M12 15V7M16 15V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                     <span>能力报告</span>
                 </button>
-                <button class="nav-item" data-screen="achievements">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 9.3L16 14L17.5 21L12 17.5L6.5 21L8 14L3 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-                    <span>成就墙</span>
+                <button class="nav-item" data-screen="farm">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M3 21V12L12 4L21 12V21H14V15H10V21H3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 14H9M15 14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>我的农场</span>
                 </button>
             </aside>
 
@@ -93,22 +93,40 @@
                 <section class="screen screen-map active" id="screen-map">
                     <!-- Hero Banner -->
                     <div class="hero-banner">
-                        <div class="hero-text">
-                            <h1 class="hero-title">欢迎回来，小冒险家！</h1>
-                            <p class="hero-subtitle">今天还有3个冒险任务等你完成</p>
-                            <div class="hero-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 67%"></div>
-                                </div>
-                                <span class="progress-text">2/3 完成</span>
-                            </div>
+                    <div class="hero-text">
+                        <div class="hero-date-row">
+                            <span class="hero-date" id="heroDate"></span>
+                            <span class="hero-checkin-badge" id="heroCheckinBadge"></span>
                         </div>
+                        <h1 class="hero-title">欢迎回来，小冒险家！</h1>
+                        <p class="hero-subtitle">今天还有3个冒险任务等你完成</p>
+                        <div class="hero-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 67%"></div>
+                            </div>
+                            <span class="progress-text">2/3 完成</span>
+                        </div>
+                    </div>
                         <div class="hero-decoration">
                             <svg viewBox="0 0 120 120" fill="none">
                                 <path d="M60 10L70 45L105 50L78 72L88 105L60 88L32 105L42 72L15 50L50 45L60 10Z" fill="#FFFFFF" fill-opacity="0.3" stroke="#FFFFFF" stroke-width="2"/>
                                 <circle cx="60" cy="60" r="8" fill="#FFFFFF" fill-opacity="0.5"/>
                             </svg>
                         </div>
+                    </div>
+
+                    <!-- Check-in Card -->
+                    <div class="checkin-card" id="checkinCard">
+                        <div class="checkin-left">
+                            <div class="checkin-flame" id="checkinFlame">
+                                <svg viewBox="0 0 48 48" fill="none"><path d="M24 4C24 4 14 14 14 26C14 33 18 38 24 38C30 38 34 33 34 26C34 20 30 16 30 12C30 8 27 6 27 4H24Z" fill="#FF8C7A" stroke="#E57060" stroke-width="1.5"/><path d="M24 20C24 20 20 24 20 30C20 33 22 35 24 35C26 35 28 33 28 30C28 27 26 25 26 22C26 19 24 20 24 20Z" fill="#FFC857"/></svg>
+                            </div>
+                            <div class="checkin-info">
+                                <span class="checkin-streak" id="checkinStreak">连续打卡 0 天</span>
+                                <span class="checkin-hint" id="checkinHint">完成今日学习任务即可打卡</span>
+                            </div>
+                        </div>
+                        <button class="checkin-btn" id="checkinBtn" disabled>打卡</button>
                     </div>
 
                     <!-- Section Title -->
@@ -402,6 +420,82 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Screen: Farm -->
+                <section class="screen screen-farm" id="screen-farm">
+                    <div class="farm-container" id="farmContainer">
+                        <!-- Farm Header -->
+                        <div class="farm-header">
+                            <div class="farm-header-left">
+                                <h2 class="farm-title">孟原的小农场</h2>
+                                <div class="farm-stats">
+                                    <span class="farm-level" id="farmLevel">Lv.1 新手农夫</span>
+                                    <span class="farm-streak" id="farmStreakDisplay">打卡 0 天</span>
+                                </div>
+                            </div>
+                            <div class="farm-header-right">
+                                <div class="farm-coins">
+                                    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" fill="#FFC857" stroke="#E5AB30" stroke-width="1.5"/><text x="12" y="16" font-size="12" font-weight="700" fill="#E5AB30" text-anchor="middle">F</text></svg>
+                                    <span id="farmCoinCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Farm Scene -->
+                        <div class="farm-scene" id="farmScene">
+                            <div class="farm-sky">
+                                <div class="farm-sun"></div>
+                                <div class="farm-cloud farm-cloud-1"></div>
+                                <div class="farm-cloud farm-cloud-2"></div>
+                            </div>
+                            <div class="farm-ground">
+                                <div class="farm-barn">
+                                    <div class="barn-roof"></div>
+                                    <div class="barn-body">
+                                        <div class="barn-door"></div>
+                                        <div class="barn-window"></div>
+                                    </div>
+                                </div>
+                                <div class="farm-animals" id="farmAnimals"></div>
+                            </div>
+                        </div>
+
+                        <!-- Food Inventory -->
+                        <div class="farm-section">
+                            <div class="farm-section-header">
+                                <h3>食物仓库</h3>
+                                <span class="farm-section-hint">答题获得食物，点击动物喂食</span>
+                            </div>
+                            <div class="food-inventory" id="foodInventory"></div>
+                        </div>
+
+                        <!-- Animals -->
+                        <div class="farm-section">
+                            <div class="farm-section-header">
+                                <h3>农场动物</h3>
+                                <span class="farm-section-hint">点击动物喂食</span>
+                            </div>
+                            <div class="animal-grid" id="animalGrid"></div>
+                        </div>
+
+                        <!-- Farm Tools -->
+                        <div class="farm-section">
+                            <div class="farm-section-header">
+                                <h3>农场工具</h3>
+                                <span class="farm-section-hint">打卡里程碑解锁</span>
+                            </div>
+                            <div class="tool-grid" id="toolGrid"></div>
+                        </div>
+
+                        <!-- Milestones -->
+                        <div class="farm-section">
+                            <div class="farm-section-header">
+                                <h3>打卡里程碑</h3>
+                            </div>
+                            <div class="milestone-track" id="milestoneTrack"></div>
                         </div>
                     </div>
                 </section>
