@@ -3515,3 +3515,998 @@ body {
         font-size: 22px;
     }
 }
+
+/* ============================================
+   Chess v2 - 零基础教学版样式
+   ============================================ */
+
+/* 顶部栏 - 心和连击 */
+.chess-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #FFF8E7;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.chess-hearts {
+    display: flex;
+    gap: 4px;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.heart-icon {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.heart-icon.filled {
+    color: #E63946;
+    text-shadow: 0 1px 2px rgba(230,57,70,0.3);
+}
+
+.heart-icon.empty {
+    color: #DDD;
+}
+
+.heart-icon.filled.broken {
+    animation: heartBreak 0.5s ease;
+}
+
+@keyframes heartBreak {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4) rotate(15deg); }
+    100% { transform: scale(1); }
+}
+
+.chess-streak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #FFE4B5, #FFD580);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: 700;
+    color: #C2410C;
+    font-size: 14px;
+}
+
+.streak-fire {
+    font-size: 18px;
+    filter: drop-shadow(0 0 4px rgba(255,140,0,0.5));
+}
+
+/* 进度条 */
+.chess-progress-bar {
+    height: 10px;
+    background: #FFF;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.chess-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #54C5F8 0%, #2A9DD8 100%);
+    border-radius: 8px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(42,157,216,0.4);
+}
+
+/* 教师角色 + 对话气泡 (多邻国风格) */
+.chess-teacher-section, .piano-teacher-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 4px;
+}
+
+.chess-teacher-avatar, .piano-teacher-avatar {
+    font-size: 56px;
+    line-height: 1;
+    flex-shrink: 0;
+    animation: teacherBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+
+@keyframes teacherBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.chess-speech-bubble, .piano-speech-bubble {
+    flex: 1;
+    background: #FFF;
+    border: 2px solid #54C5F8;
+    border-radius: 18px;
+    padding: 12px 16px;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(84,197,248,0.15);
+}
+
+.chess-speech-bubble::before, .piano-speech-bubble::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 16px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 10px solid #54C5F8;
+}
+
+.chess-speech-bubble::after, .piano-speech-bubble::after {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 17px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 8px solid #FFF;
+}
+
+.chess-speech-text, .piano-speech-text {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2D2A28;
+    font-weight: 500;
+}
+
+.chess-speech-play, .piano-speech-play {
+    background: linear-gradient(135deg, #54C5F8, #2A9DD8);
+    color: #FFF;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(42,157,216,0.3);
+    transition: all 0.2s;
+}
+
+.chess-speech-play:hover, .piano-speech-play:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(42,157,216,0.4);
+}
+
+.chess-speech-play:active, .piano-speech-play:active {
+    transform: scale(0.96);
+}
+
+/* 视频环节样式 */
+.chess-video-title, .piano-video-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFF;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chess-piece-large {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chess-piece-large svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chess-video-info, .piano-video-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chess-scenario-title, .piano-scenario-title {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2D2A28;
+}
+
+.chess-scenario-subtitle, .piano-scenario-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #8A8682;
+    line-height: 1.4;
+}
+
+.chess-video-wrapper, .piano-video-wrapper {
+    width: 100%;
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    background: #1A1816;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.chess-video-iframe, .piano-video-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 练习环节样式 */
+.chess-scenario-title-bar {
+    background: #FFF;
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    text-align: center;
+}
+
+.chess-scenario-title-bar .chess-scenario-title {
+    margin: 0 0 4px 0;
+}
+
+.chess-scenario-instruction {
+    margin: 0;
+    font-size: 14px;
+    color: #54C5F8;
+    font-weight: 600;
+}
+
+/* 棋盘升级 - Duolingo风格 */
+.chess-board {
+    background: #6B5D4F;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    margin: 0 auto 16px;
+    max-width: 480px;
+    display: grid;
+    gap: 2px;
+}
+
+.chess-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    position: relative;
+}
+
+.chess-cell.light {
+    background: #F0E9DD;
+}
+
+.chess-cell.dark {
+    background: #B59875;
+}
+
+.chess-cell:hover {
+    transform: scale(1.05);
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.chess-cell.hint-glow {
+    animation: hintGlow 0.6s ease infinite alternate;
+}
+
+@keyframes hintGlow {
+    from { box-shadow: 0 0 0 rgba(255,200,87,0.5); }
+    to { box-shadow: 0 0 16px 4px rgba(255,200,87,0.7); }
+}
+
+.chess-cell.correct-move {
+    background: #95D5A6 !important;
+    animation: correctPop 0.4s ease;
+}
+
+@keyframes correctPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.chess-cell.wrong-move {
+    background: #FF9B8A !important;
+    animation: wrongShake 0.4s ease;
+}
+
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* 棋子样式 - SVG支持 */
+.chess-piece {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.chess-piece svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chess-piece.enemy {
+    opacity: 0.85;
+}
+
+.chess-piece.piece-animate {
+    opacity: 0;
+    transform: scale(0.5) rotate(-15deg);
+}
+
+.chess-piece.piece-animate.piece-show {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chess-piece.piece-jump {
+    animation: pieceJump 0.5s ease;
+}
+
+@keyframes pieceJump {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* 操作按钮 */
+.chess-actions, .piano-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.chess-hint-btn, .piano-hint-btn {
+    background: #FFF;
+    border: 2px solid #FFC857;
+    color: #B45309;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(255,200,87,0.3);
+}
+
+.chess-hint-btn:hover, .piano-hint-btn:hover {
+    background: #FFF8E7;
+    transform: translateY(-1px);
+}
+
+.chess-continue-btn, .piano-continue-btn {
+    background: linear-gradient(135deg, #54C5F8, #2A9DD8);
+    color: #FFF;
+    border: none;
+    border-radius: 24px;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(42,157,216,0.4);
+    transition: all 0.2s;
+    flex: 1;
+    max-width: 280px;
+}
+
+.chess-continue-btn:hover, .piano-continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42,157,216,0.5);
+}
+
+.chess-continue-btn:active, .piano-continue-btn:active {
+    transform: scale(0.97);
+}
+
+/* 进度点 */
+.chess-progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.chess-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #DDD;
+    transition: all 0.3s;
+}
+
+.chess-dot.done {
+    background: #95D5A6;
+}
+
+.chess-dot.current {
+    background: #54C5F8;
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* 结果页 */
+.chess-result, .piano-result {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.chess-result-emoji, .piano-result-emoji {
+    font-size: 80px;
+    margin-bottom: 16px;
+    animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.chess-result-title, .piano-result-title {
+    font-size: 28px;
+    color: #2D2A28;
+    margin: 0 0 12px 0;
+}
+
+.chess-result-msg, .piano-result-msg {
+    font-size: 16px;
+    color: #5A5651;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.chess-result-stars, .piano-result-stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 48px;
+}
+
+.result-star.filled {
+    color: #FFC857;
+    text-shadow: 0 2px 8px rgba(255,200,87,0.5);
+    animation: starPop 0.4s ease;
+}
+
+.result-star.filled:nth-child(2) { animation-delay: 0.1s; }
+.result-star.filled:nth-child(3) { animation-delay: 0.2s; }
+
+.result-star.empty {
+    color: #E5E5E5;
+}
+
+@keyframes starPop {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    60% { transform: scale(1.3) rotate(20deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.chess-result-score, .piano-result-score {
+    font-size: 20px;
+    font-weight: 700;
+    color: #54C5F8;
+    margin-bottom: 24px;
+}
+
+.chess-result-btn, .piano-result-btn {
+    background: linear-gradient(135deg, #54C5F8, #2A9DD8);
+    color: #FFF;
+    border: none;
+    border-radius: 24px;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(42,157,216,0.4);
+    transition: all 0.2s;
+}
+
+.chess-result-btn:hover, .piano-result-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42,157,216,0.5);
+}
+
+/* ============================================
+   Piano v2 - Simple Piano风格样式
+   ============================================ */
+
+.piano-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #FFB4A2, #E5989B);
+    color: #FFF;
+    padding: 12px 16px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(229,152,155,0.3);
+}
+
+.piano-song-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.piano-song-emoji {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.piano-song-name {
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.piano-stage-indicator {
+    background: rgba(255,255,255,0.25);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+}
+
+.piano-progress-bar {
+    height: 10px;
+    background: #FFF;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.piano-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFB4A2 0%, #E5989B 100%);
+    border-radius: 8px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(229,152,155,0.4);
+}
+
+/* 当前按键信息 */
+.piano-current-key-info {
+    text-align: center;
+    background: #FFF;
+    border-radius: 20px;
+    padding: 24px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.piano-key-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.piano-solfege-large {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FFB4A2, #E5989B);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+}
+
+.piano-number-large {
+    font-size: 36px;
+    color: #8A8682;
+    font-weight: 700;
+}
+
+.piano-key-prompt {
+    margin: 0;
+    color: #5A5651;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.piano-key-prompt b {
+    color: #E5989B;
+    font-size: 18px;
+}
+
+/* 听音区域 */
+.piano-listen-area {
+    text-align: center;
+    background: linear-gradient(135deg, #FFF5F3, #FFE4DE);
+    border-radius: 20px;
+    padding: 32px 16px;
+    margin-bottom: 16px;
+}
+
+.piano-listen-btn {
+    background: linear-gradient(135deg, #54C5F8, #2A9DD8);
+    color: #FFF;
+    border: none;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 8px 20px rgba(42,157,216,0.4);
+    transition: all 0.2s;
+    margin-bottom: 12px;
+}
+
+.piano-listen-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 24px rgba(42,157,216,0.5);
+}
+
+.piano-listen-btn.playing {
+    animation: listenPulse 0.6s ease;
+}
+
+@keyframes listenPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(42,157,216,0.4); }
+    50% { transform: scale(1.1); box-shadow: 0 8px 28px rgba(42,157,216,0.7); }
+}
+
+.piano-listen-hint {
+    margin: 0;
+    color: #5A5651;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* 钢琴键盘升级 */
+.piano-keyboard {
+    display: flex;
+    background: #2D2A28;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    margin: 0 auto 12px;
+    max-width: 600px;
+    position: relative;
+}
+
+.piano-keyboard-2 {
+    max-width: 480px;
+}
+
+.piano-key {
+    flex: 1;
+    background: linear-gradient(180deg, #FFF 0%, #F5F5F5 100%);
+    border: none;
+    border-radius: 0 0 8px 8px;
+    padding: 0 4px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 12px;
+    cursor: pointer;
+    margin: 0 1px;
+    transition: all 0.1s;
+    color: #2D2A28;
+    user-select: none;
+    box-shadow:
+        inset 0 -4px 0 rgba(0,0,0,0.1),
+        0 1px 2px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.piano-key:hover {
+    background: linear-gradient(180deg, #FFF8E7 0%, #FFE9C8 100%);
+}
+
+.piano-key.pressed {
+    background: linear-gradient(180deg, #FFE0CC 0%, #FFC8A8 100%) !important;
+    transform: translateY(2px);
+    box-shadow:
+        inset 0 -2px 0 rgba(0,0,0,0.1),
+        inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.piano-key.target {
+    background: linear-gradient(180deg, #FFD580 0%, #FFB4A2 100%);
+    box-shadow:
+        inset 0 -4px 0 rgba(229,152,155,0.4),
+        0 0 16px rgba(255,180,162,0.6);
+    animation: targetPulse 1s ease infinite;
+}
+
+.piano-key.target-highlight {
+    background: linear-gradient(180deg, #FFD580 0%, #FFB4A2 100%);
+    box-shadow:
+        inset 0 -4px 0 rgba(229,152,155,0.4),
+        0 0 20px rgba(255,180,162,0.8);
+    animation: targetPulse 1s ease infinite;
+}
+
+@keyframes targetPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+.piano-key.correct-key {
+    background: linear-gradient(180deg, #B8F0C8 0%, #95D5A6 100%) !important;
+    animation: correctPop 0.4s ease;
+}
+
+.piano-key.wrong-key {
+    background: linear-gradient(180deg, #FF9B8A 0%, #FF6B5A 100%) !important;
+    animation: wrongShake 0.4s ease;
+}
+
+.key-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #5A5651;
+}
+
+.key-solfege {
+    font-size: 11px;
+    color: #8A8682;
+    margin-top: 2px;
+}
+
+/* 乐谱 */
+.piano-sheet {
+    background: #FFF;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.piano-measure {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #E5E5E5;
+}
+
+.piano-measure:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.measure-label {
+    display: block;
+    font-size: 12px;
+    color: #8A8682;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.measure-notes {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.piano-note {
+    background: #F5F5F5;
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 50px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.piano-note.current {
+    background: linear-gradient(135deg, #FFD580, #FFB4A2);
+    border-color: #E5989B;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(229,152,155,0.4);
+}
+
+.piano-note.done {
+    background: #E5F5E8;
+    border-color: #95D5A6;
+    opacity: 0.6;
+}
+
+.note-number {
+    display: block;
+    font-size: 18px;
+    font-weight: 800;
+    color: #2D2A28;
+    line-height: 1;
+}
+
+.note-solfege {
+    display: block;
+    font-size: 11px;
+    color: #5A5651;
+    margin-top: 2px;
+}
+
+.piano-prompt {
+    background: #FFF;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    color: #5A5651;
+}
+
+.piano-prompt b {
+    color: #E5989B;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.prompt-icon {
+    font-size: 20px;
+}
+
+.piano-play-all-btn {
+    background: #FFF;
+    border: 2px solid #FFB4A2;
+    color: #E5989B;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.piano-play-all-btn:hover {
+    background: #FFF5F3;
+}
+
+.piano-actions-secondary {
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .chess-teacher-avatar, .piano-teacher-avatar {
+        font-size: 44px;
+    }
+
+    .chess-speech-text, .piano-speech-text {
+        font-size: 13px;
+    }
+
+    .chess-board {
+        max-width: 360px;
+    }
+
+    .piano-key {
+        height: 110px;
+    }
+
+    .piano-solfege-large {
+        font-size: 44px;
+    }
+
+    .piano-listen-btn {
+        width: 100px;
+        height: 100px;
+    }
+
+    .chess-result-emoji, .piano-result-emoji {
+        font-size: 64px;
+    }
+
+    .chess-result-title, .piano-result-title {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 400px) {
+    .chess-teacher-section, .piano-teacher-section {
+        gap: 8px;
+    }
+
+    .chess-teacher-avatar, .piano-teacher-avatar {
+        font-size: 36px;
+    }
+
+    .chess-speech-bubble, .piano-speech-bubble {
+        padding: 10px 12px;
+    }
+
+    .chess-speech-text, .piano-speech-text {
+        font-size: 12px;
+    }
+
+    .chess-cell {
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    .piano-key {
+        height: 90px;
+        padding-bottom: 8px;
+    }
+
+    .key-label {
+        font-size: 11px;
+    }
+
+    .key-solfege {
+        font-size: 9px;
+    }
+
+    .piano-solfege-large {
+        font-size: 36px;
+    }
+
+    .piano-number-large {
+        font-size: 28px;
+    }
+
+    .piano-listen-btn {
+        width: 84px;
+        height: 84px;
+    }
+
+    .piano-listen-btn svg {
+        width: 36px;
+        height: 36px;
+    }
+}
