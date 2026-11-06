@@ -2,7 +2,7 @@
  * 暑假幼小衔接通关大冒险 - 交互逻辑 v4
  * - 6学科 × 15题题库（共90道），每次随机抽10题
  * - 答题后自动跳转下一题
- * - 每日欢迎语（含小朋友名字：王孟原）
+ * - 每日欢迎语（含小朋友名字：萧奕琛）
  * - 完成模块后星星收集动画
  * - 集满6模块触发庆祝动画（撒花+小动物鼓励）
  * - 拼音/英语模块支持点击发音（Web Speech API）
@@ -11,7 +11,7 @@
 (function () {
     'use strict';
 
-    var CHILD_NAME = '王孟原';
+    var CHILD_NAME = '萧奕琛';
     var SUBJECTS = ['pinyin', 'math', 'english', 'piano', 'chess', 'reading'];
     var QUESTIONS_PER_QUIZ = 10;
     var DATA_VERSION = 'v3_daily';
@@ -544,7 +544,7 @@
         review: { id: 'screen-quiz', title: '错题复习' },
         tasks: { id: 'screen-map', title: '今日任务', scrollTarget: '.task-list' },
         errors: { id: 'screen-report', title: '错题巩固' },
-        farm: { id: 'screen-farm', title: '孟原的小农场' }
+        farm: { id: 'screen-farm', title: '柠檬的小农场' }
     };
 
     function switchScreen(target) {

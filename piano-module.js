@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    var CHILD_NAME = '王孟原';
+    var CHILD_NAME = '萧奕琛';
 
     // ===== TTS 语音功能 =====
     var ttsEnabled = true;
